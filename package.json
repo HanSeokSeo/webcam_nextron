@@ -1,15 +1,14 @@
 {
   "private": true,
-  "name": "my-nextron-app",
+  "name": "qray-viewer",
   "description": "My application description",
   "version": "1.0.0",
-  "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
+  "author": "loganAtAioBio <holystory.seo@gmail.com>",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
     "build": "nextron build",
-    "postinstall": "electron-builder install-app-deps",
-    "dev2": "tsc && ts-node ./main/background.ts"
+    "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "electron-serve": "^1.1.0",
