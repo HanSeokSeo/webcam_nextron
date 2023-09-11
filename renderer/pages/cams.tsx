@@ -1,15 +1,14 @@
-import { MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Webcam from "react-webcam";
-import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useInterval } from "usehooks-ts";
-import debounce, { getAgentSystem, getCurrentDateTime, startStream, stopStream, trimTextToLength } from "utils";
-import { useDidMountEffect } from "utils";
+import { getAgentSystem, getCurrentDateTime, startStream, stopStream, trimTextToLength } from "utils";
 
 import ImageList from "@/components/ImageList";
 import ViewerMain from "@/components/ViewerMain";
 import ViewerController from "@/components/ViewerController";
 import ViewerStatus from "@/components/ViewerStatus";
-import FileController from "@/components/FolderController";
+import FolderController from "@/components/FolderController";
+
+import { ipcRenderer } from "electron";
 
 interface CapturedPhotos {
   name: string;
@@ -218,13 +217,15 @@ function Cams() {
         ctx.drawImage(cam, 0, 0, cam.videoWidth, cam.videoHeight);
 
         const imageSrc = canvas.toDataURL();
-        const currentTime = getCurrentDateTime();
+        const currentTime: string = getCurrentDateTime();
         const newPhotoInfo = {
           name: currentTime,
           imgSrc: imageSrc,
         };
 
         setCapturedPhotos((prev) => [...prev, newPhotoInfo]);
+
+        ipcRenderer.send("image-saved", newPhotoInfo);
       }
     }
   }, []);
@@ -290,7 +291,7 @@ function Cams() {
       <div className="flex justify-center min-w-screen min-h-screen">
         <div className="w-[25%] flex flex-col h-screen">
           <ImageList capturedPhotos={capturedPhotos} showClickedImage={showClickedImage} />
-          <FileController />
+          <FolderController setCapturedPhotos={setCapturedPhotos} />
         </div>
 
         <div className="w-[75%]">

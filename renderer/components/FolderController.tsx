@@ -1,14 +1,50 @@
 import * as fs from "fs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ipcRenderer } from "electron";
+import path from "path";
 
-function FolderController() {
+interface CapturedPhotos {
+  name: string;
+  imgSrc: string;
+}
+
+function FolderController({ setCapturedPhotos }: { setCapturedPhotos: React.Dispatch<React.SetStateAction<CapturedPhotos[]>> }) {
   const [folderPath, setFolderPath] = useState<string | undefined>();
 
   const openDirectoryDialog = async () => {
-    // Open the directory selection dialog and get the selected path.
     ipcRenderer.send("open-directory-dialog");
   };
+
+  const getPngFilePaths = (folderPath: string | undefined) => {
+    if (!folderPath) return;
+
+    try {
+      const files = fs.readdirSync(folderPath);
+      const pngFiles = files.filter((file) => file.toLowerCase().endsWith(".png"));
+
+      const fileList = pngFiles.map((e) => ({
+        name: e,
+        imgSrc: `${folderPath}/${e}`,
+      }));
+
+      console.log(fileList);
+
+      setCapturedPhotos(fileList);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    ipcRenderer.on("selected-folder", (event, folderPath) => {
+      setFolderPath(folderPath);
+      getPngFilePaths(folderPath);
+
+      return () => {
+        ipcRenderer.removeAllListeners("selected-folder");
+      };
+    });
+  }, []);
 
   return (
     <div className="border-b-2 border-l-2 border-slate-500 h-1/5">
@@ -18,8 +54,7 @@ function FolderController() {
       >
         Open Folder
       </button>
-
-      {/* {folderPath && <FolderViewer folderPath={folderPath} />} */}
+      <div>{folderPath}</div>
     </div>
   );
 }

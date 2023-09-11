@@ -16,6 +16,6 @@
     "jsx": "preserve",
     "outDir": "./dist"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+  "include": ["type.d.ts, next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
   "exclude": ["node_modules", "renderer/next.config.js", "app", "dist"]
 }
