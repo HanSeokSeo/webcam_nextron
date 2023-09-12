@@ -3,11 +3,16 @@
   "name": "qray-viewer",
   "description": "My application description",
   "version": "1.0.0",
-  "author": "loganAtAioBio <holystory.seo@gmail.com>",
+  "author": "AioBio Inc. <holystory.seo@gmail.com>",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
     "build": "nextron build",
+    "build:all": "nextron build --all",
+    "build:win32": "nextron build --win --ia32",
+    "build:win64": "nextron build --win --x64",
+    "build:mac": "nextron build --mac --x64",
+    "build:linux": "nextron build --linux",
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
@@ -25,6 +30,7 @@
     "postcss": "^8.4.13",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.11.0",
     "react-webcam": "^7.1.1",
     "tailwind-scrollbar": "^3.0.5",
     "tailwindcss": "^3.1.8",

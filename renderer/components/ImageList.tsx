@@ -1,18 +1,20 @@
-import Image from "next/image";
+import Image from "next/image"
 
 interface CapturedPhotos {
-  name: string;
-  imgSrc: string;
+  name: string
+  imgSrc: string
 }
 
 function ImageList({
   capturedPhotos,
   showClickedImage,
 }: {
-  capturedPhotos: CapturedPhotos[];
-  showClickedImage: (src: string) => void;
+  capturedPhotos: CapturedPhotos[]
+  showClickedImage: (src: string) => void
 }) {
-  const reversedPhotos = [...capturedPhotos].reverse();
+  const reversedPhotos = [...capturedPhotos].reverse()
+
+  console.log(reversedPhotos)
 
   return (
     <div className="flex flex-col overflow-y-scroll scrollbar-thin border-slate-500 border-l-2 border-y-2 w-full h-4/5">
@@ -23,11 +25,11 @@ function ImageList({
               <Image src={photo.imgSrc} alt="Captured" width={400} height={300} onClick={() => showClickedImage(photo.imgSrc)} />
               <div className="m-1">{photo.name}</div>
             </div>
-          );
+          )
         }
       })}
     </div>
-  );
+  )
 }
 
-export default ImageList;
+export default ImageList
