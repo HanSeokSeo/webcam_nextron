@@ -8,7 +8,7 @@ const isProd: boolean = process.env.NODE_ENV === "production"
 
 let mainWindow: BrowserWindow | null = null
 
-let selectedFolder: string | null = null
+let selectedFolder = null
 
 if (isProd) {
   serve({ directory: "app" })
@@ -88,6 +88,8 @@ ipcMain.on("image-saved", async (_, newPhotoInfo) => {
     }
   }
 })
+
+app.on("ready", () => {})
 
 ipcMain.on("quit-app", () => {
   app.quit()
