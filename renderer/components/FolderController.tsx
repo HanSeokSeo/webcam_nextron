@@ -26,7 +26,7 @@ function FolderController({
 
   useEffect(() => {
     ipcRenderer.on("selected-folder", (_, folderPath) => {
-      const separator = platform === "macOS" ? "/" : String.raw`\\`
+      const separator = platform === "macOS" ? "/" : `\\`
       const parts = folderPath.split(separator)
       const result = parts.slice(1, 5).join(separator)
       const patient = parts.pop()
