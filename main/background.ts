@@ -44,7 +44,7 @@ ipcMain.on("open-directory-dialog", async event => {
     try {
       fs.mkdirSync(qrayImagePath)
     } catch (error) {
-      console.error(error)
+      console.error(console.error(`Error creating directory at ${qrayImagePath}:`, error), error)
       return
     }
   }
@@ -82,7 +82,7 @@ ipcMain.on("image-saved", async (_, newPhotoInfo) => {
 
     try {
       fs.writeFileSync(imagePath, imgSrc.replace(/^data:image\/png;base64,/, ""), "base64")
-      // console.log(`Image saved to ${imagePath}`)
+      console.log(`Image saved to ${imagePath}`)
     } catch (error) {
       console.error(error)
     }

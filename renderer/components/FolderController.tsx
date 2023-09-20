@@ -10,7 +10,13 @@ interface CapturedPhotos {
   imgSrc: string
 }
 
-function FolderController({ setCapturedPhotos }: { setCapturedPhotos: React.Dispatch<React.SetStateAction<CapturedPhotos[]>> }) {
+function FolderController({
+  setCapturedPhotos,
+  platform,
+}: {
+  setCapturedPhotos: React.Dispatch<React.SetStateAction<CapturedPhotos[]>>
+  platform: string
+}) {
   const [folderPath, setFolderPath] = useState<string>("")
   const [selectedPatient, setSelectedPatient] = useState<string>("")
 
@@ -20,8 +26,9 @@ function FolderController({ setCapturedPhotos }: { setCapturedPhotos: React.Disp
 
   useEffect(() => {
     ipcRenderer.on("selected-folder", (_, folderPath) => {
-      const parts = folderPath.split("/")
-      const result = parts.slice(1, 5).join("/")
+      const separator = platform === "Windows" ? "\\" : "/"
+      const parts = folderPath.split(separator)
+      const result = parts.slice(1, 5).join(separator)
       const patient = parts.pop()
 
       setFolderPath(result)
@@ -43,7 +50,7 @@ function FolderController({ setCapturedPhotos }: { setCapturedPhotos: React.Disp
   }, [])
 
   return (
-    <div className="border-b-2 border-l-2 border-slate-500 h-1/5">
+    <div className="border-b-2 border-l-2 border-slate-500 h-1/5 p-2">
       <div className="h-[10%] flex justify-end">
         <AiFillFolderAdd
           title="Create Patient"

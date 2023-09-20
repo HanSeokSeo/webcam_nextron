@@ -50,12 +50,14 @@ function Cams() {
 
   // 연결된 기기를 통해 들어오는 stream 가져오기
   const getDeviceStream = async (checkedDeviceId: string | undefined, platform: string) => {
+    console.log("stream을 체크하려고 시도합니다.")
     try {
       await navigator.mediaDevices
         .getUserMedia({
           video: { deviceId: { exact: checkedDeviceId } },
         })
         .then(stream => {
+          console.log(stream)
           if (stream !== undefined) {
             if (platform === "Windows") {
               const { muted } = stream.getVideoTracks()[0]
@@ -291,7 +293,7 @@ function Cams() {
       <div className="flex justify-center min-w-screen min-h-screen">
         <div className="w-[25%] flex flex-col h-screen">
           <ImageList capturedPhotos={capturedPhotos} showClickedImage={showClickedImage} />
-          <FolderController setCapturedPhotos={setCapturedPhotos} />
+          <FolderController setCapturedPhotos={setCapturedPhotos} platform={platform} />
         </div>
 
         <div className="w-[75%]">

@@ -23,7 +23,7 @@ function ViewerMain({ videoRef, isQrayDeviceStreamOn, isCaptureMode, clickedImag
         </div>
       </div>
       {clickedImageSrc ? (
-        <div className="h-[95%] w-full flex justify-center">
+        <div className={`h-[95%] w-full flex justify-center ${isCaptureMode ? "hidden" : ""}`}>
           <div className="h-[90%] w-full relative flex-col mt-6">
             <Image src={clickedImageSrc} alt="Qray normal connection" layout="fill" objectFit="cover" priority />
           </div>
