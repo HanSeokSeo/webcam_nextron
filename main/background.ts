@@ -77,8 +77,9 @@ ipcMain.on("image-saved", async (_, newPhotoInfo) => {
   const { name, imgSrc } = newPhotoInfo
 
   if (selectedFolder) {
+    const safeName = `${name.replace(/:/g, "-")}.png`
     const targetFolder = selectedFolder
-    const imagePath = path.join(targetFolder, `${name}.png`)
+    const imagePath = path.join(targetFolder, `${safeName}.png`)
 
     try {
       fs.writeFileSync(imagePath, imgSrc.replace(/^data:image\/png;base64,/, ""), "base64")
