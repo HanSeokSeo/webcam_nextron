@@ -47,7 +47,7 @@ function FolderController({
         ipcRenderer.removeAllListeners("selected-files")
       }
     })
-  }, [])
+  }, [platform])
 
   return (
     <div className="border-b-2 border-l-2 border-slate-500 h-1/5 p-2">
