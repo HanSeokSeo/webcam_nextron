@@ -1,11 +1,11 @@
-import React from "react";
-import Image from "next/image";
+import React from "react"
+import Image from "next/image"
 
 interface ViewerProps {
-  videoRef: React.RefObject<HTMLVideoElement>;
-  isQrayDeviceStreamOn: boolean;
-  isCaptureMode: boolean;
-  clickedImageSrc: string;
+  videoRef: React.RefObject<HTMLVideoElement>
+  isQrayDeviceStreamOn: boolean
+  isCaptureMode: boolean
+  clickedImageSrc: string
 }
 
 function ViewerMain({ videoRef, isQrayDeviceStreamOn, isCaptureMode, clickedImageSrc }: ViewerProps) {
@@ -22,13 +22,17 @@ function ViewerMain({ videoRef, isQrayDeviceStreamOn, isCaptureMode, clickedImag
           </div>
         </div>
       </div>
-      <div className={`h-[95%] w-full flex justify-center ${isCaptureMode ? "hidden" : ""}`}>
-        <div className="h-[90%] w-full relative flex-col mt-6">
-          <Image src={clickedImageSrc} alt="Qray normal connection" layout="fill" objectFit="cover" priority />
+      {clickedImageSrc ? (
+        <div className="h-[95%] w-full flex justify-center">
+          <div className="h-[90%] w-full relative flex-col mt-6">
+            <Image src={clickedImageSrc} alt="Qray normal connection" layout="fill" objectFit="cover" priority />
+          </div>
         </div>
-      </div>
+      ) : (
+        ""
+      )}
     </div>
-  );
+  )
 }
 
-export default ViewerMain;
+export default ViewerMain

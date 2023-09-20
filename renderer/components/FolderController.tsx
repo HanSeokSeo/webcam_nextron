@@ -44,7 +44,7 @@ function FolderController({ setCapturedPhotos }: { setCapturedPhotos: React.Disp
 
   return (
     <div className="border-b-2 border-l-2 border-slate-500 h-1/5">
-      <div className="min-h-1/7 flex justify-end border-blue-500 border-2">
+      <div className="h-[10%] flex justify-end">
         <AiFillFolderAdd
           title="Create Patient"
           size="24"
@@ -64,11 +64,11 @@ function FolderController({ setCapturedPhotos }: { setCapturedPhotos: React.Disp
           onClick={() => ipcRenderer.send("quit-app")}
         />
       </div>
-      <div className="min-h-2/7 border-blue-500 border-2">
+      <div className="h-[40%]">
         <div className="h-1/2">Selected Folder : </div>
         <div className="pl-4 h-1/2">{folderPath}</div>
       </div>
-      <div className="min-h-3/7 border-blue-500 border-2">
+      <div className="h-[40%] mt-2">
         <div className="h-1/3">Selected Patient : </div>
         <div className="h-2/3 text-2xl font-bold flex justify-center items-center">{selectedPatient}</div>
       </div>
