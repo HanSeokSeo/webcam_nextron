@@ -8,8 +8,66 @@ import { usb, findByIds } from "usb"
 const isProd: boolean = process.env.NODE_ENV === "production"
 
 let mainWindow: BrowserWindow | null = null
+let selectedFolder: string | null = null
 
-let selectedFolder = null
+const handleUSBAttach = (device: any) => {
+  console.log("USB Device Attached")
+
+  try {
+    device.open()
+    const idVendor = 1204
+    const idProduct = 18466
+    const info = device.deviceDescriptor
+
+    if (info.idVendor === idVendor && info.idProduct === idProduct) {
+      let deviceINTF
+
+      try {
+        const specificDevice = findByIds(idVendor, idProduct)
+        deviceINTF = specificDevice.interfaces[0]
+
+        if (deviceINTF.isKernelDriverActive()) deviceINTF.detachKernelDriver()
+        deviceINTF.claim()
+        console.log("Claimed successfully.")
+        console.log(device)
+      } catch (error) {
+        console.error("Error claiming the device:", error)
+      }
+
+      let ePs = deviceINTF.endpoints
+      let epIN
+      ePs.forEach((ep, index) => {
+        if (ep.direction == "in") {
+          // IN endpoint 찾기
+          epIN = ep
+        }
+      })
+      console.log("Endponint", epIN)
+
+      if (epIN) {
+        // 이벤트 리스너는 한 번만 등록하도록 수정
+        epIN.removeAllListeners("data")
+        epIN.on("data", data => {
+          console.log("Button event received:", data)
+        })
+
+        setInterval(() => {
+          // Polling 구현
+          console.log("작동해라!!")
+        }, 2000)
+      } else {
+        console.log("Error Occured")
+      }
+    }
+  } catch (error) {
+    console.error("Failed to open device:", error)
+  }
+}
+
+const handleUSBDetach = (device: any) => {
+  console.log("USB Device Detached")
+  console.log(device)
+}
 
 if (isProd) {
   serve({ directory: "app" })
@@ -45,33 +103,32 @@ ipcMain.on("open-directory-dialog", async event => {
     try {
       fs.mkdirSync(qrayImagePath)
     } catch (error) {
-      console.error(console.error(`Error creating directory at ${qrayImagePath}:`, error), error)
+      console.error("Error creating directory at", qrayImagePath, ":", error)
       return
     }
   }
 
-  await dialog
-    .showOpenDialog(mainWindow!, {
+  try {
+    const result = await dialog.showOpenDialog(mainWindow!, {
       defaultPath: qrayImagePath,
       properties: ["openDirectory", "createDirectory", "openFile"],
     })
-    .then(result => {
-      if (!result.canceled && result.filePaths.length > 0) {
-        selectedFolder = result.filePaths[0]
 
-        const filesInSelectedFolder = fs.readdirSync(selectedFolder)
-        const imageFilesInSelectedFolder = filesInSelectedFolder.filter(file => file.endsWith(".png"))
-        const imageFilePathsInSelectedFolder = imageFilesInSelectedFolder.map(
-          filename => "file://" + path.join(selectedFolder, filename),
-        )
+    if (!result.canceled && result.filePaths.length > 0) {
+      selectedFolder = result.filePaths[0]
 
-        event.sender.send("selected-folder", selectedFolder)
-        event.sender.send("selected-files", imageFilePathsInSelectedFolder)
-      }
-    })
-    .catch(error => {
-      console.error(error)
-    })
+      const filesInSelectedFolder = fs.readdirSync(selectedFolder)
+      const imageFilesInSelectedFolder = filesInSelectedFolder.filter(file => file.endsWith(".png"))
+      const imageFilePathsInSelectedFolder = imageFilesInSelectedFolder.map(
+        filename => "file://" + path.join(selectedFolder!, filename),
+      )
+
+      event.sender.send("selected-folder", selectedFolder)
+      event.sender.send("selected-files", imageFilePathsInSelectedFolder)
+    }
+  } catch (error) {
+    console.error(error)
+  }
 })
 
 ipcMain.on("image-saved", async (_, newPhotoInfo) => {
@@ -91,44 +148,9 @@ ipcMain.on("image-saved", async (_, newPhotoInfo) => {
   }
 })
 
-ipcMain.on("quit-app", () => {
-  app.quit()
-})
-
 app.on("ready", () => {
-  usb.on("attach", async function (device) {
-    console.log("USB Device Attached")
-
-    try {
-      console.log(device)
-      device.open()
-    } catch (error) {
-      console.error(`Failed to open device: ${error}`)
-      return
-    }
-
-    const idVendor = 1204
-    const idProduct = 18466
-    const info = device.deviceDescriptor
-
-    if (info.idVendor === idVendor && info.idProduct === idProduct) {
-      let deviceINTF
-
-      try {
-        const device = findByIds(idVendor, idProduct)
-        deviceINTF = device.interfaces[0]
-
-        if (deviceINTF.isKernelDriverActive()) deviceINTF.detachKernelDriver()
-        deviceINTF.claim().then(console.log("클레임 성공"))
-      } catch (error) {}
-    }
-  })
-
-  usb.on("detach", async function (device) {
-    console.log("USB Device Detached")
-    console.log(device)
-    device.close()
-  })
+  usb.on("attach", handleUSBAttach)
+  usb.on("detach", handleUSBDetach)
 })
 
 app.on("window-all-closed", () => {
