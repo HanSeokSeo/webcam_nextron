@@ -1,5 +1,17 @@
 appId: com.example.nextron
 productName: ViewPlus
+
+mac:
+  category:
+  extendInfo:
+    IOKitPersonalities:
+      Your App USB Access:
+        CFBundleIdentifier: com.example.nextron
+        IOProviderClass: IOUSBDevice
+        bcdDevice: 0
+        idProduct: 18466
+        idVendor: 1204
+
 copyright: Copyright © 2023 AIOBIO
 directories:
   output: dist

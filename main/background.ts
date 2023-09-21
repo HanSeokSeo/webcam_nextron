@@ -3,6 +3,7 @@ import serve from "electron-serve"
 import { createWindow } from "./helpers"
 import * as path from "path"
 import * as fs from "fs"
+import { usb, findByIds } from "usb"
 
 const isProd: boolean = process.env.NODE_ENV === "production"
 
@@ -92,6 +93,42 @@ ipcMain.on("image-saved", async (_, newPhotoInfo) => {
 
 ipcMain.on("quit-app", () => {
   app.quit()
+})
+
+app.on("ready", () => {
+  usb.on("attach", async function (device) {
+    console.log("USB Device Attached")
+
+    try {
+      console.log(device)
+      device.open()
+    } catch (error) {
+      console.error(`Failed to open device: ${error}`)
+      return
+    }
+
+    const idVendor = 1204
+    const idProduct = 18466
+    const info = device.deviceDescriptor
+
+    if (info.idVendor === idVendor && info.idProduct === idProduct) {
+      let deviceINTF
+
+      try {
+        const device = findByIds(idVendor, idProduct)
+        deviceINTF = device.interfaces[0]
+
+        if (deviceINTF.isKernelDriverActive()) deviceINTF.detachKernelDriver()
+        deviceINTF.claim().then(console.log("클레임 성공"))
+      } catch (error) {}
+    }
+  })
+
+  usb.on("detach", async function (device) {
+    console.log("USB Device Detached")
+    console.log(device)
+    device.close()
+  })
 })
 
 app.on("window-all-closed", () => {

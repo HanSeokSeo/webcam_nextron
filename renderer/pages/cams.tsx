@@ -63,7 +63,7 @@ function Cams() {
               const { muted } = stream.getVideoTracks()[0]
 
               if (!muted) {
-                startStream(videoRef, stream) // stream을 video tag에 연결
+                startStream(videoRef, stream)
                 setLocalStream(stream)
                 setIsQrayDeviceStreamOn(true)
               } else {
@@ -73,7 +73,7 @@ function Cams() {
               const { active } = stream
 
               if (active) {
-                startStream(videoRef, stream) // stream을 video tag에 연결
+                startStream(videoRef, stream)
                 setLocalStream(stream)
                 setIsQrayDeviceStreamOn(true)
               } else {
