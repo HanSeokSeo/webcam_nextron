@@ -11,10 +11,10 @@ interface CapturedPhotos {
 }
 
 function FolderController({
-  setCapturedPhotos,
+  setCapturedImages,
   platform,
 }: {
-  setCapturedPhotos: React.Dispatch<React.SetStateAction<CapturedPhotos[]>>
+  setCapturedImages: React.Dispatch<React.SetStateAction<CapturedPhotos[]>>
   platform: string
 }) {
   const [folderPath, setFolderPath] = useState<string>("")
@@ -41,7 +41,8 @@ function FolderController({
         imgSrc: filePath,
       }))
 
-      setCapturedPhotos(fileList)
+      console.log("여기")
+      setCapturedImages(fileList)
 
       return () => {
         ipcRenderer.removeAllListeners("selected-files")

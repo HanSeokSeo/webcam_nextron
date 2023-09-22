@@ -10,7 +10,7 @@ import FolderController from "@/components/FolderController"
 
 import { ipcRenderer } from "electron"
 
-interface CapturedPhotos {
+interface CapturedImages {
   name: string
   imgSrc: string
 }
@@ -22,7 +22,7 @@ interface ConnectedDeviceInfo {
 
 function Cams() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true)
-  const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhotos[]>([])
+  const [capturedImages, setCapturedImages] = useState<CapturedImages[]>([])
 
   const [deviceList, setDeviceList] = useState<ConnectedDeviceInfo[]>([]) // 현재 연결된 기기 목록
   const [selectedDeviceId, setSeletedDeviceId] = useState<string | undefined>(undefined) // 현재 체크된 기기 아아디
@@ -204,11 +204,10 @@ function Cams() {
     }
   }
 
-  const capturePhoto = useCallback(() => {
+  const captureImage = useCallback(() => {
     const cam = videoRef.current
 
     if (cam && cam.srcObject) {
-      const stream = cam.srcObject as MediaStream
       const canvas = document.createElement("canvas")
       canvas.width = cam.videoWidth
       canvas.height = cam.videoHeight
@@ -221,26 +220,33 @@ function Cams() {
         const imageSrc = canvas.toDataURL()
         const currentTime: string = getCurrentDateTime()
         const newPhotoInfo = {
-          name: currentTime,
+          name: currentTime + ".png",
           imgSrc: imageSrc,
         }
 
-        setCapturedPhotos(prev => [...prev, newPhotoInfo])
-
+        setCapturedImages(prev => [...prev, newPhotoInfo])
         ipcRenderer.send("image-saved", newPhotoInfo)
       }
     }
   }, [])
 
   // 이미지 리스트에서 사진을 클릭한 경우
-  const showClickedImage = (src: string) => {
+  const showClickedImage = useCallback((src: string) => {
     if (isCaptureMode) {
       setIsCaptureMode(false)
       setClickedImageSrc(src)
     } else {
       setClickedImageSrc(src)
     }
-  }
+  }, [])
+
+  // 이미지 리스트에서 사진 삭제 버튼을 클릭한 경우
+  const deleteImage = useCallback((imgSrc: string) => {
+    ipcRenderer.send("delete-image", imgSrc)
+    ipcRenderer.on("delete-image", (_, updatedImageList) => {
+      setCapturedImages(prev => [...updatedImageList])
+    })
+  }, [])
 
   useInterval(() => {
     setCount(count => count + 1)
@@ -285,15 +291,15 @@ function Cams() {
       getConnectedDevices()
     }
 
-    window.addEventListener("keydown", capturePhoto, true)
+    window.addEventListener("keydown", captureImage, true)
   }, [])
 
   return (
     <>
       <div className="flex justify-center min-w-screen min-h-screen">
         <div className="w-[25%] flex flex-col h-screen">
-          <ImageList capturedPhotos={capturedPhotos} showClickedImage={showClickedImage} />
-          <FolderController setCapturedPhotos={setCapturedPhotos} platform={platform} />
+          <ImageList capturedImages={capturedImages} showClickedImage={showClickedImage} deleteImage={deleteImage} />
+          <FolderController setCapturedImages={setCapturedImages} platform={platform} />
         </div>
 
         <div className="w-[75%]">
@@ -320,7 +326,7 @@ function Cams() {
             isPlaying={isPlaying}
             deviceList={deviceList}
             handleCheckboxChange={handleCheckboxChange}
-            capturePhoto={capturePhoto}
+            captureImage={captureImage}
           />
         </div>
       </div>

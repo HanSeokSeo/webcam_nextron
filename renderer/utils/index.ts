@@ -71,7 +71,7 @@ export async function stopStream(
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
       video: { deviceId: { exact: checkedDeviceId } },
     })
-    stream.getTracks().forEach((track) => track.stop())
+    stream.getTracks().forEach(track => track.stop())
 
     if (videoRef.current) {
       videoRef.current.srcObject = null

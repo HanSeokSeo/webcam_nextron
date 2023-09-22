@@ -1,40 +1,40 @@
-import { createRef, useEffect, useRef } from "react";
-import React from "react";
+import { createRef, useEffect, useRef } from "react"
+import React from "react"
 
 interface ConnectedDeviceInfo {
-  deviceInfo: MediaDeviceInfo;
-  checked: boolean;
+  deviceInfo: MediaDeviceInfo
+  checked: boolean
 }
 
 function ViewerController({
   isPlaying,
   deviceList,
   handleCheckboxChange,
-  capturePhoto,
+  captureImage,
 }: {
-  isPlaying: boolean;
-  deviceList: ConnectedDeviceInfo[];
-  handleCheckboxChange: any;
-  capturePhoto: () => void;
+  isPlaying: boolean
+  deviceList: ConnectedDeviceInfo[]
+  handleCheckboxChange: any
+  captureImage: () => void
 }) {
-  const captureRef = useRef<HTMLButtonElement | null>(null);
-  const checkboxRefs = useRef<React.RefObject<HTMLInputElement>[]>([]);
+  const captureRef = useRef<HTMLButtonElement | null>(null)
+  const checkboxRefs = useRef<React.RefObject<HTMLInputElement>[]>([])
 
   const handleCaptureButton = () => {
-    capturePhoto();
-    captureRef.current?.blur();
-  };
+    captureImage()
+    captureRef.current?.blur()
+  }
 
   const handleInput = (id: string, index: number) => {
-    handleCheckboxChange(id);
-    checkboxRefs.current[index].current?.blur();
-  };
+    handleCheckboxChange(id)
+    checkboxRefs.current[index].current?.blur()
+  }
 
   useEffect(() => {
     checkboxRefs.current = Array(deviceList.length)
       .fill(0)
-      .map((_, i) => checkboxRefs.current[i] ?? createRef());
-  }, [deviceList]);
+      .map((_, i) => checkboxRefs.current[i] ?? createRef())
+  }, [deviceList])
 
   return (
     <div className="flex w-full min-w-7xl h-1/5 border-slate-500 border-x-2 border-b-2">
@@ -42,23 +42,20 @@ function ViewerController({
         <div className="flex h-1/2">
           <button
             className="flex items-center justify-center w-1/2 px-4 py-2 m-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 active:bg-blue-700 opacity-50 cursor-not-allowed"
-            disabled
-          >
+            disabled>
             {isPlaying ? "Stop" : "Start"}{" "}
           </button>
           <button
             ref={captureRef}
             className="w-1/2 px-4 py-2 m-2 bg-yellow-500 rounded-md hover:bg-yellow-600 active:bg-yellow-700"
-            onClick={handleCaptureButton}
-          >
+            onClick={handleCaptureButton}>
             Capture
           </button>
         </div>
         <div className="flex h-1/2">
           <button
             className="w-full px-4 py-2 m-2 bg-red-500 rounded-md hover:bg-red-600 active:bg-red-700 opacity-50 cursor-not-allowed"
-            disabled
-          >
+            disabled>
             Record
           </button>
         </div>
@@ -87,7 +84,7 @@ function ViewerController({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default ViewerController;
+export default ViewerController

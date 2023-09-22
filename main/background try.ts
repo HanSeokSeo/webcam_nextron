@@ -1,3 +1,6 @@
+/**
+ * ! 로컬 PC에 연결된 기기의 신호 감지를 위한 코드(작동안함)
+ */
 import { app, ipcMain, dialog, BrowserWindow } from "electron"
 import serve from "electron-serve"
 import { createWindow } from "./helpers"
@@ -10,12 +13,59 @@ const isProd: boolean = process.env.NODE_ENV === "production"
 let mainWindow: BrowserWindow | null = null
 let selectedFolder: string | null = null
 
-const desktopPath = path.join(require("os").homedir(), "Desktop") // 로컬 PC의 "Desktop" 폴더의 경로
-const qrayImagePath = path.join(desktopPath, "qrayimage") //
-
 const handleUSBAttach = (device: any) => {
   console.log("USB Device Attached")
   console.log("oh! device", device)
+  try {
+    device.open()
+    const idVendor = 60186
+    const idProduct = 20785
+    const info = device.deviceDescriptor
+
+    if (info.idVendor === idVendor && info.idProduct === idProduct) {
+      let deviceINTF
+
+      try {
+        const specificDevice = findByIds(idVendor, idProduct)
+        deviceINTF = specificDevice.interfaces[0]
+
+        if (deviceINTF.isKernelDriverActive()) deviceINTF.detachKernelDriver()
+        deviceINTF.claim()
+        console.log("Claimed successfully.")
+        console.log(device)
+      } catch (error) {
+        console.error("Error claiming the device:", error)
+      }
+
+      let ePs = deviceINTF.endpoints
+      let epIN
+
+      ePs.forEach((ep, index) => {
+        if (ep.direction == "in") {
+          // IN endpoint 찾기
+          epIN = ep
+        }
+      })
+      console.log("Endponint", epIN)
+
+      if (epIN) {
+        // 이벤트 리스너는 한 번만 등록하도록 수정
+        epIN.removeAllListeners("data")
+        epIN.on("data", data => {
+          console.log("Button event received:", data)
+        })
+
+        setInterval(() => {
+          // Polling 구현
+          console.log("작동해라!!")
+        }, 2000)
+      } else {
+        console.log("Error Occured")
+      }
+    }
+  } catch (error) {
+    console.error("Failed to open device:", error)
+  }
 }
 
 const handleUSBDetach = (device: any) => {
@@ -50,6 +100,9 @@ if (isProd) {
 })()
 
 ipcMain.on("open-directory-dialog", async event => {
+  const desktopPath = path.join(require("os").homedir(), "Desktop")
+  const qrayImagePath = path.join(desktopPath, "qrayimage")
+
   if (!fs.existsSync(qrayImagePath)) {
     try {
       fs.mkdirSync(qrayImagePath)
@@ -82,7 +135,7 @@ ipcMain.on("open-directory-dialog", async event => {
   }
 })
 
-ipcMain.on("image-saved", async (event, newPhotoInfo) => {
+ipcMain.on("image-saved", async (_, newPhotoInfo) => {
   const { name, imgSrc } = newPhotoInfo
 
   if (selectedFolder) {
@@ -96,45 +149,7 @@ ipcMain.on("image-saved", async (event, newPhotoInfo) => {
     } catch (error) {
       console.error(error)
     }
-
-    const filesInSelectedFolder = fs.readdirSync(selectedFolder)
-    const imageFilesInSelectedFolder = filesInSelectedFolder.filter(file => file.endsWith(".png"))
-    const imageFilePathsInSelectedFolder = imageFilesInSelectedFolder.map(
-      filename => "file://" + path.join(selectedFolder!, filename),
-    )
-
-    event.sender.send("selected-files", imageFilePathsInSelectedFolder)
   }
-})
-
-ipcMain.on("delete-image", async (event, imgName) => {
-  const imgNameWithoutFilePrefix = imgName.replace("file://", "")
-
-  try {
-    fs.unlinkSync(imgNameWithoutFilePrefix)
-    console.log(`Image deleted at ${imgNameWithoutFilePrefix}`)
-  } catch (error) {
-    console.error(error)
-  }
-
-  const filesInSelectedFolder = fs.readdirSync(selectedFolder)
-  const imageFilesInSelectedFolder = filesInSelectedFolder.filter(file => file.endsWith(".png"))
-  const imageFilePathsInSelectedFolder = imageFilesInSelectedFolder.map(
-    filename => "file://" + path.join(selectedFolder!, filename),
-  )
-
-  const result = imageFilePathsInSelectedFolder.map(e => {
-    const parts = e.split("/")
-    const fileName = parts[parts.length - 1]
-
-    const arg = {
-      name: fileName,
-      imgSrc: e,
-    }
-    return arg
-  })
-
-  event.reply("delete-image", result)
 })
 
 app.on("ready", () => {
