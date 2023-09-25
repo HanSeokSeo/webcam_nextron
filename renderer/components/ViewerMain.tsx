@@ -13,7 +13,14 @@ function ViewerMain({ videoRef, isQrayDeviceStreamOn, isCaptureMode, clickedImag
     <div className="flex flex-col w-full border-l-2 border-slate-500">
       <div className="h-[5%] ml-3 mt-3 ">QrayStream {isQrayDeviceStreamOn ? "ON" : "OFF"}</div>
       <div className={`h-[95%] w-full flex justify-center ${isCaptureMode ? "" : "hidden"}`}>
-        <video autoPlay ref={videoRef} muted className={`h-full ${isQrayDeviceStreamOn ? "" : "hidden"} `} />
+        <video
+          width="1280"
+          height="720"
+          autoPlay
+          ref={videoRef}
+          muted
+          className={`h-full ${isQrayDeviceStreamOn ? "" : "hidden"} `}
+        />
         <div className={`flex flex-col items-center justify-center text-2xl  ${isQrayDeviceStreamOn ? "hidden" : ""}`}>
           <p>Qray device is not connected.</p>
           <p>After connecting the cables and turn on the power.</p>

@@ -215,6 +215,7 @@ function Cams() {
       const ctx = canvas.getContext("2d")
 
       if (ctx) {
+        console.log(`camWidth: ${cam.videoWidth}, camHeight: ${cam.videoHeight}`)
         ctx.drawImage(cam, 0, 0, cam.videoWidth, cam.videoHeight)
 
         const imageSrc = canvas.toDataURL()

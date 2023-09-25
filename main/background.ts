@@ -33,8 +33,10 @@ if (isProd) {
   await app.whenReady()
 
   mainWindow = createWindow("main", {
-    width: 1650,
-    height: 800,
+    width: 1728,
+    height: 972,
+    minWidth: 1280,
+    minHeight: 720,
     webPreferences: {
       webSecurity: false,
     },

@@ -81,15 +81,18 @@ export async function stopStream(
   }
 }
 
-export function startStream(videoRef: MutableRefObject<HTMLVideoElement | null>, stream: any) {
+export function startStream(videoRef: MutableRefObject<HTMLVideoElement | null>, stream: MediaStream) {
   if (videoRef.current) {
     videoRef.current.srcObject = null
     videoRef.current.srcObject = stream
     videoRef.current
       .play()
-      .then()
-      .catch((e: any) => console.log(e))
-    console.log("Stream is conneted to video tag.")
+      .then(() => {
+        console.log("Video playback started.")
+      })
+      .catch((e: any) => {
+        console.log("Video playback failed", e)
+      })
   }
 }
 
