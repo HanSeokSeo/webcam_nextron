@@ -41,7 +41,6 @@ function FolderController({
         imgSrc: filePath,
       }))
 
-      console.log("여기")
       setCapturedImages(fileList)
 
       return () => {
