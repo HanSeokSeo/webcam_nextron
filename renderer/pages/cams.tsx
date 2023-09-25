@@ -50,11 +50,10 @@ function Cams() {
 
   // 연결된 기기를 통해 들어오는 stream 가져오기
   const getDeviceStream = async (checkedDeviceId: string | undefined, platform: string) => {
-    console.log("stream을 체크하려고 시도합니다.")
     try {
       await navigator.mediaDevices
         .getUserMedia({
-          video: { deviceId: { exact: checkedDeviceId } },
+          video: { deviceId: { exact: checkedDeviceId } }
         })
         .then(stream => {
           console.log(stream)
@@ -84,6 +83,13 @@ function Cams() {
         })
     } catch (error) {
       console.log("error in mediaStream", error)
+      // setIsQrayDeviceStreamOn(false)
+      setLocalStream(undefined)
+      setSeletedDeviceId(undefined)
+      setIsDeviceChecked(false)
+      setIsNeededCheckingStream(false)
+      // setIsMuted("undefined")
+      // setIsActive("undefined")
     }
   }
 
@@ -97,7 +103,7 @@ function Cams() {
         const checkedValue = device.deviceInfo.deviceId === changedDeviceId ? true : false
         const newElement = {
           deviceInfo: device.deviceInfo,
-          checked: checkedValue,
+          checked: checkedValue
         }
         upDatedDeviceList.push(newElement)
       })
@@ -111,7 +117,7 @@ function Cams() {
         const checkedValue = device.deviceInfo.deviceId === changedDeviceId ? true : false
         const newElement = {
           deviceInfo: device.deviceInfo,
-          checked: checkedValue,
+          checked: checkedValue
         }
         upDatedDeviceList.push(newElement)
       })
@@ -180,7 +186,7 @@ function Cams() {
             console.log("스트림 체크인 for windows")
           } else {
             console.log("스트림 체크아웃 for windows")
-            stopStream(videoRef, selectedDeviceId)
+            // stopStream(videoRef, selectedDeviceId)
             setIsQrayDeviceStreamOn(false)
             setLocalStream(undefined)
           }
@@ -193,7 +199,7 @@ function Cams() {
             console.log("스트림 체크인 for mac")
           } else {
             console.log("스트림 체크아웃 for mac")
-            stopStream(videoRef, selectedDeviceId)
+            // stopStream(videoRef, selectedDeviceId)
             setIsQrayDeviceStreamOn(false)
             setLocalStream(undefined)
           }
@@ -215,14 +221,14 @@ function Cams() {
       const ctx = canvas.getContext("2d")
 
       if (ctx) {
-        console.log(`camWidth: ${cam.videoWidth}, camHeight: ${cam.videoHeight}`)
+        console.log(`width:${cam.videoWidth}, height:${cam.videoHeight}`)
         ctx.drawImage(cam, 0, 0, cam.videoWidth, cam.videoHeight)
 
         const imageSrc = canvas.toDataURL()
         const currentTime: string = getCurrentDateTime()
         const newPhotoInfo = {
           name: currentTime + ".png",
-          imgSrc: imageSrc,
+          imgSrc: imageSrc
         }
 
         setCapturedImages(prev => [...prev, newPhotoInfo])
@@ -261,6 +267,7 @@ function Cams() {
     getConnectedDevices()
 
     if (isNeededCheckingStream) {
+      console.log("selectedDeviceId", selectedDeviceId)
       localStream === undefined ? getDeviceStream(selectedDeviceId, platform) : checkDeviceStream(localStream)
     } else {
       if (isDeviceChecked) {
@@ -297,7 +304,7 @@ function Cams() {
 
   return (
     <>
-      <div className="flex justify-center min-w-screen min-h-screen">
+      <div className="flex justify-center w-screen h-screen">
         <div className="w-[25%] flex flex-col h-screen">
           <ImageList capturedImages={capturedImages} showClickedImage={showClickedImage} deleteImage={deleteImage} />
           <FolderController setCapturedImages={setCapturedImages} platform={platform} />

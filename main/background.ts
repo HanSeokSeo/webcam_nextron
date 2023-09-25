@@ -35,7 +35,7 @@ if (isProd) {
   mainWindow = createWindow("main", {
     width: 1728,
     height: 972,
-    minWidth: 1280,
+    minWidth: 1270,
     minHeight: 720,
     webPreferences: {
       webSecurity: false,
