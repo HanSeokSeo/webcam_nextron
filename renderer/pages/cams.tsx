@@ -25,7 +25,8 @@ function Cams() {
   const [capturedImages, setCapturedImages] = useState<CapturedImages[]>([])
 
   const [deviceList, setDeviceList] = useState<ConnectedDeviceInfo[]>([]) // 현재 연결된 기기 목록
-  const [selectedDeviceId, setSeletedDeviceId] = useState<string | undefined>(undefined) // 현재 체크된 기기 아아디
+  const [selectedDeviceId, setSeletedDeviceId] = useState<string | undefined>(undefined) // 현재 체크된 기기 아이디
+  const [selectedDeviceLabel, setSeletedDeviceLabel] = useState<string | undefined>(undefined) // 현재 체크된 기기 라벨
   const [previousDeviceId, setPreviousDeviceId] = useState<string | undefined>(undefined) // 바로 직전에 체크되었던 기기 아이디
 
   const [isDeviceChecked, setIsDeviceChecked] = useState<boolean>(false)
@@ -83,18 +84,29 @@ function Cams() {
         })
     } catch (error) {
       console.log("error in mediaStream", error)
-      // setIsQrayDeviceStreamOn(false)
-      setLocalStream(undefined)
-      setSeletedDeviceId(undefined)
-      setIsDeviceChecked(false)
       setIsNeededCheckingStream(false)
-      // setIsMuted("undefined")
-      // setIsActive("undefined")
+
+      if (selectedDeviceLabel === "QRAYCAM") {
+        console.log("10")
+        setLocalStream(undefined)
+        setSeletedDeviceId(undefined)
+        setIsDeviceChecked(false)
+        setIsNeededCheckingStream(false)
+      }
+
+      if (selectedDeviceLabel === "QRAYPEN") {
+        console.log("20")
+        // setLocalStream(undefined)
+        // setSeletedDeviceId(undefined)
+        // setSeletedDeviceLabel(undefined)
+        // setIsDeviceChecked(false)
+        setIsNeededCheckingStream(false)
+      }
     }
   }
 
   // 기기의 체크 상태에 따른 각종 상태값 변경
-  const handleCheckboxChange = (changedDeviceId: string) => {
+  const handleCheckboxChange = (changedDeviceId: string, changedDeviceLabel: string) => {
     const upDatedDeviceList: ConnectedDeviceInfo[] = []
 
     // case: initial, 최초로 체크 버튼을 눌렀을 경우
@@ -139,6 +151,15 @@ function Cams() {
       console.log("Double Check")
     }
 
+    if (changedDeviceLabel) {
+      const confirmedLabel = () => {
+        const arg = changedDeviceLabel.toUpperCase()
+
+        if (arg.includes("QRAYCAM")) return "QRAYCAM"
+        if (arg.includes("QRAYPEN")) return "QRAYPEN"
+      }
+      setSeletedDeviceLabel(confirmedLabel)
+    }
     setPreviousDeviceId(selectedDeviceId === undefined ? undefined : selectedDeviceId)
     setDeviceList(upDatedDeviceList)
     setLocalStream(undefined)
@@ -175,20 +196,34 @@ function Cams() {
 
       console.log(localStream)
       console.log(localStream.getVideoTracks()[0])
-      console.log(`os: ${platform}, isMuted: ${localStream.getVideoTracks()[0].muted}, active: ${localStream.active}`)
+      console.log(`os: ${platform}, muted: ${localStream.getVideoTracks()[0].muted}, active: ${localStream.active}`)
 
       switch (platform) {
         case "Windows":
-          if (!muted && !isQrayDeviceStreamOn) {
-            console.log("스트림 최초 체크인 for windows")
-            setIsDeviceChecked(true)
-          } else if (!muted && isQrayDeviceStreamOn) {
-            console.log("스트림 체크인 for windows")
-          } else {
-            console.log("스트림 체크아웃 for windows")
-            // stopStream(videoRef, selectedDeviceId)
-            setIsQrayDeviceStreamOn(false)
-            setLocalStream(undefined)
+          switch (selectedDeviceLabel) {
+            case "QRAYPEN":
+              if (!muted && !isQrayDeviceStreamOn) {
+                console.log("스트림 최초 체크인 for windows")
+                setIsDeviceChecked(true)
+              } else if (!muted && isQrayDeviceStreamOn) {
+                console.log("스트림 체크인 for windows")
+              } else {
+                console.log("스트림 체크아웃 for windows")
+                setIsQrayDeviceStreamOn(false)
+                setLocalStream(undefined)
+              }
+              break
+            case "QRAYCAM":
+              if (active && !isQrayDeviceStreamOn) {
+                console.log("스트림 최초 체크인 for windows")
+                setIsDeviceChecked(true)
+              } else if (active && isQrayDeviceStreamOn) {
+                console.log("스트림 체크인 for windows")
+              } else {
+                console.log("스트림 체크아웃 for windows")
+                setIsQrayDeviceStreamOn(false)
+                setLocalStream(undefined)
+              }
           }
           break
         case "macOS":
@@ -199,7 +234,6 @@ function Cams() {
             console.log("스트림 체크인 for mac")
           } else {
             console.log("스트림 체크아웃 for mac")
-            // stopStream(videoRef, selectedDeviceId)
             setIsQrayDeviceStreamOn(false)
             setLocalStream(undefined)
           }
@@ -210,6 +244,7 @@ function Cams() {
     }
   }
 
+  // 사진 촬영
   const captureImage = useCallback(() => {
     const cam = videoRef.current
 
@@ -263,12 +298,15 @@ function Cams() {
     console.log(`isNeededCheckingStream: ${isNeededCheckingStream}`)
     console.log(`isDeviceChecked: ${isDeviceChecked}, checkCase: ${checkCase}`)
     console.log(`selectedDeviceId: ${trimTextToLength(selectedDeviceId, 30)}`)
+    console.log(`selectedDeviceLabel: ${selectedDeviceLabel}`)
     console.log(`previouseDeviceId: ${trimTextToLength(previousDeviceId, 30)}`)
     getConnectedDevices()
 
     if (isNeededCheckingStream) {
       console.log("selectedDeviceId", selectedDeviceId)
-      localStream === undefined ? getDeviceStream(selectedDeviceId, platform) : checkDeviceStream(localStream)
+      if (selectedDeviceId) {
+        localStream === undefined ? getDeviceStream(selectedDeviceId, platform) : checkDeviceStream(localStream)
+      }
     } else {
       if (isDeviceChecked) {
         switch (checkCase) {

@@ -10,7 +10,7 @@ function ViewerController({
   isPlaying,
   deviceList,
   handleCheckboxChange,
-  captureImage,
+  captureImage
 }: {
   isPlaying: boolean
   deviceList: ConnectedDeviceInfo[]
@@ -25,8 +25,9 @@ function ViewerController({
     captureRef.current?.blur()
   }
 
-  const handleInput = (id: string, index: number) => {
-    handleCheckboxChange(id)
+  const handleInput = (deviceId: string, deviceLabel: string, index: number) => {
+    console.log("deviceLabel", deviceLabel)
+    handleCheckboxChange(deviceId, deviceLabel)
     checkboxRefs.current[index].current?.blur()
   }
 
@@ -75,7 +76,7 @@ function ViewerController({
                   type="checkbox"
                   checked={device.checked}
                   className={`mr-2 w-5 h-5 ${key}`}
-                  onChange={() => handleInput(device.deviceInfo.deviceId, key)}
+                  onChange={() => handleInput(device.deviceInfo.deviceId, device.deviceInfo.label, key)}
                 />
                 {device.deviceInfo.label || `Device ${key + 1}`}
               </li>
