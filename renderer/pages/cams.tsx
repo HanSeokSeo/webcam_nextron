@@ -9,6 +9,7 @@ import ViewerStatus from "@/components/ViewerStatus"
 import FolderController from "@/components/FolderController"
 
 import { ipcRenderer } from "electron"
+import useConnectedDevices from "hooks/useConnectedDevices"
 
 interface CapturedImages {
   name: string
@@ -24,7 +25,6 @@ function Cams() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true)
   const [capturedImages, setCapturedImages] = useState<CapturedImages[]>([])
 
-  const [deviceList, setDeviceList] = useState<ConnectedDeviceInfo[]>([]) // 현재 연결된 기기 목록
   const [selectedDeviceId, setSeletedDeviceId] = useState<string | undefined>(undefined) // 현재 체크된 기기 아이디
   const [selectedDeviceLabel, setSeletedDeviceLabel] = useState<string | undefined>(undefined) // 현재 체크된 기기 라벨
   const [previousDeviceId, setPreviousDeviceId] = useState<string | undefined>(undefined) // 바로 직전에 체크되었던 기기 아이디
@@ -48,6 +48,8 @@ function Cams() {
   const [clickedImageSrc, setClickedImageSrc] = useState<string>("")
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
+
+  const { deviceList, setDeviceList, getConnectedDevices } = useConnectedDevices(selectedDeviceId)
 
   // 연결된 기기를 통해 들어오는 stream 가져오기
   const getDeviceStream = async (checkedDeviceId: string | undefined, platform: string) => {
@@ -84,23 +86,35 @@ function Cams() {
         })
     } catch (error) {
       console.log("error in mediaStream", error)
-      setIsNeededCheckingStream(false)
 
       if (selectedDeviceLabel === "QRAYCAM") {
-        console.log("10")
-        setLocalStream(undefined)
-        setSeletedDeviceId(undefined)
-        setIsDeviceChecked(false)
-        setIsNeededCheckingStream(false)
+        if (platform === "macOS") {
+          console.log("10")
+          setLocalStream(undefined)
+          setSeletedDeviceId(undefined)
+          setIsDeviceChecked(false)
+          setIsNeededCheckingStream(false)
+        }
+
+        if (platform === "Windows" && String(error).includes("Requested device not found")) {
+          setLocalStream(undefined)
+          setSeletedDeviceId(undefined)
+          setSeletedDeviceLabel(undefined)
+          setIsDeviceChecked(false)
+          setIsNeededCheckingStream(false)
+        }
       }
 
       if (selectedDeviceLabel === "QRAYPEN") {
         console.log("20")
-        // setLocalStream(undefined)
-        // setSeletedDeviceId(undefined)
-        // setSeletedDeviceLabel(undefined)
-        // setIsDeviceChecked(false)
+        setLocalStream(undefined)
+        setSeletedDeviceId(undefined)
+        setIsDeviceChecked(false)
         setIsNeededCheckingStream(false)
+
+        if (platform === "Windows" && String(error).includes("Requested device not found")) {
+          // setIsNeededCheckingStream(false)
+        }
       }
     }
   }
@@ -108,6 +122,20 @@ function Cams() {
   // 기기의 체크 상태에 따른 각종 상태값 변경
   const handleCheckboxChange = (changedDeviceId: string, changedDeviceLabel: string) => {
     const upDatedDeviceList: ConnectedDeviceInfo[] = []
+
+    // Device Label 생성
+    const makeLabel = (targetLabel: string) => {
+      const arg = targetLabel.toUpperCase()
+
+      if (arg.includes("QRAYCAM")) return "QRAYCAM"
+      if (arg.includes("QRAYPEN")) return "QRAYPEN"
+    }
+
+    let deviceLabel
+
+    if (changedDeviceLabel) {
+      deviceLabel = makeLabel(changedDeviceLabel)
+    }
 
     // case: initial, 최초로 체크 버튼을 눌렀을 경우
     if (selectedDeviceId === undefined) {
@@ -119,8 +147,10 @@ function Cams() {
         }
         upDatedDeviceList.push(newElement)
       })
+
       setCheckCase("initial")
       setSeletedDeviceId(changedDeviceId)
+      setSeletedDeviceLabel(deviceLabel)
       setIsDeviceChecked(true)
       console.log("Initial Check")
     } else if (changedDeviceId !== selectedDeviceId) {
@@ -135,6 +165,7 @@ function Cams() {
       })
       setCheckCase("single")
       setSeletedDeviceId(changedDeviceId)
+      setSeletedDeviceLabel(deviceLabel)
       setIsDeviceChecked(true)
       console.log("Sigle Check")
     } else {
@@ -145,45 +176,16 @@ function Cams() {
       })
       setCheckCase("double")
       setSeletedDeviceId(undefined)
+      setSeletedDeviceLabel(undefined)
       setIsDeviceChecked(false)
       setIsMuted("undefined")
       setIsActive("undefined")
       console.log("Double Check")
     }
-
-    if (changedDeviceLabel) {
-      const confirmedLabel = () => {
-        const arg = changedDeviceLabel.toUpperCase()
-
-        if (arg.includes("QRAYCAM")) return "QRAYCAM"
-        if (arg.includes("QRAYPEN")) return "QRAYPEN"
-      }
-      setSeletedDeviceLabel(confirmedLabel)
-    }
     setPreviousDeviceId(selectedDeviceId === undefined ? undefined : selectedDeviceId)
     setDeviceList(upDatedDeviceList)
     setLocalStream(undefined)
     setIsNeededCheckingStream(!isNeededCheckingStream)
-  }
-
-  // 컴에 연결된 기기 중에서 선택한 기기 확인
-  const getConnectedDevices = async () => {
-    const newDeviceList: ConnectedDeviceInfo[] = []
-
-    try {
-      await navigator.mediaDevices.enumerateDevices().then(devices => {
-        devices.forEach(deviceInfo => {
-          const checkedValue = deviceInfo.deviceId === selectedDeviceId ? true : false
-          if (deviceInfo.kind === "videoinput") {
-            const newElement = { deviceInfo, checked: checkedValue }
-            newDeviceList.push(newElement)
-          }
-        })
-      })
-      setDeviceList(newDeviceList)
-    } catch (error) {
-      console.log("Error in enumerateDevices : ", error)
-    }
   }
 
   // useInterval 중 기기의 스트림 체크하기
@@ -202,10 +204,10 @@ function Cams() {
         case "Windows":
           switch (selectedDeviceLabel) {
             case "QRAYPEN":
-              if (!muted && !isQrayDeviceStreamOn) {
+              if (!muted && active && !isQrayDeviceStreamOn) {
                 console.log("스트림 최초 체크인 for windows")
                 setIsDeviceChecked(true)
-              } else if (!muted && isQrayDeviceStreamOn) {
+              } else if (!muted && active && isQrayDeviceStreamOn) {
                 console.log("스트림 체크인 for windows")
               } else {
                 console.log("스트림 체크아웃 for windows")
@@ -233,7 +235,7 @@ function Cams() {
           } else if (active && isQrayDeviceStreamOn) {
             console.log("스트림 체크인 for mac")
           } else {
-            console.log("스트림 체크아웃 for mac")
+            console.log("스트림 체크아웃 for mac1")
             setIsQrayDeviceStreamOn(false)
             setLocalStream(undefined)
           }
