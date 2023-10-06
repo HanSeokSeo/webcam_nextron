@@ -53,7 +53,7 @@ const useDeviceStreamCheck = () => {
           } else if (active && isQrayDeviceStreamOn) {
             console.log("스트림 체크인 for mac")
           } else {
-            console.log("스트림 체크아웃 for mac1")
+            console.log("스트림 체크아웃 for mac")
             setIsQrayDeviceStreamOn(false)
             setLocalStream(undefined)
           }

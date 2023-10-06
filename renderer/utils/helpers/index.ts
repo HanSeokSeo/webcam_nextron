@@ -1,16 +1,9 @@
+import { MutableRefObject, useEffect, useRef } from "react"
+
 //* 텍스트를 일정한 크기로 자르기
 export function trimTextToLength(str: string | undefined, maxLength: number) {
   return str?.length! > maxLength ? str?.substring(0, maxLength) + "..." : str
 }
-
-// export function getCurrentTime() {
-//   const now = new Date()
-//   const hours = now.getHours().toString().padStart(2, "0")
-//   const minutes = now.getMinutes().toString().padStart(2, "0")
-//   const seconds = now.getSeconds().toString().padStart(2, "0")
-
-//   return `${hours}:${minutes}:${seconds}`
-// }
 
 export function getCurrentDateTime(): string {
   const now: Date = new Date()
@@ -22,14 +15,17 @@ export function getCurrentDateTime(): string {
     second: "2-digit",
     year: "numeric",
     month: "2-digit",
-    day: "2-digit",
+    day: "2-digit"
   }
 
   return now.toLocaleString(undefined, options)
 }
 
 //* debounce 구현
-export default function debounce<T extends (...args: any[]) => any>(callback: T, delay: number) {
+export default function debounce<T extends (...args: any[]) => any>(
+  callback: T,
+  delay: number
+) {
   let timeoutId: NodeJS.Timeout
 
   return function (this: ThisParameterType<T>, ...args: Parameters<T>): void {
@@ -42,7 +38,8 @@ export default function debounce<T extends (...args: any[]) => any>(callback: T,
 
 export function getAgentSystem(): string {
   const ua = navigator.userAgent
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
 
   const platform = navigator.platform.toLowerCase()
   if (platform.startsWith("win")) return "Windows"
@@ -51,8 +48,6 @@ export function getAgentSystem(): string {
 
   return isMobile ? "mobile" : "unknown"
 }
-
-import { MutableRefObject, useEffect, useRef } from "react"
 
 export function useDidMountEffect(func: () => void, deps: unknown) {
   const didMount = useRef(0)
@@ -65,11 +60,11 @@ export function useDidMountEffect(func: () => void, deps: unknown) {
 
 export async function stopStream(
   videoRef: MutableRefObject<HTMLVideoElement | null | undefined>,
-  checkedDeviceId: string | undefined,
+  checkedDeviceId: string | undefined
 ) {
   try {
     const stream: MediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: { exact: checkedDeviceId } },
+      video: { deviceId: { exact: checkedDeviceId } }
     })
     stream.getTracks().forEach(track => track.stop())
 
@@ -81,7 +76,10 @@ export async function stopStream(
   }
 }
 
-export function startStream(videoRef: MutableRefObject<HTMLVideoElement | null>, stream: MediaStream) {
+export function startStream(
+  videoRef: MutableRefObject<HTMLVideoElement | null>,
+  stream: MediaStream
+) {
   if (videoRef.current) {
     videoRef.current.srcObject = null
     videoRef.current.srcObject = stream

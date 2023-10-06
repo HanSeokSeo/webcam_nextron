@@ -38,8 +38,8 @@ if (isProd) {
     minWidth: 1270,
     minHeight: 720,
     webPreferences: {
-      webSecurity: false,
-    },
+      webSecurity: false
+    }
   })
 
   if (isProd) {
@@ -64,7 +64,7 @@ ipcMain.on("open-directory-dialog", async event => {
   try {
     const result = await dialog.showOpenDialog(mainWindow!, {
       defaultPath: qrayImagePath,
-      properties: ["openDirectory", "createDirectory", "openFile"],
+      properties: ["openDirectory", "createDirectory", "openFile"]
     })
 
     if (!result.canceled && result.filePaths.length > 0) {
@@ -73,7 +73,7 @@ ipcMain.on("open-directory-dialog", async event => {
       const filesInSelectedFolder = fs.readdirSync(selectedFolder)
       const imageFilesInSelectedFolder = filesInSelectedFolder.filter(file => file.endsWith(".png"))
       const imageFilePathsInSelectedFolder = imageFilesInSelectedFolder.map(
-        filename => "file://" + path.join(selectedFolder!, filename),
+        filename => "file://" + path.join(selectedFolder!, filename)
       )
 
       event.sender.send("selected-folder", selectedFolder)
@@ -102,7 +102,7 @@ ipcMain.on("image-saved", async (event, newPhotoInfo) => {
     const filesInSelectedFolder = fs.readdirSync(selectedFolder)
     const imageFilesInSelectedFolder = filesInSelectedFolder.filter(file => file.endsWith(".png"))
     const imageFilePathsInSelectedFolder = imageFilesInSelectedFolder.map(
-      filename => "file://" + path.join(selectedFolder!, filename),
+      filename => "file://" + path.join(selectedFolder!, filename)
     )
 
     event.sender.send("selected-files", imageFilePathsInSelectedFolder)
@@ -122,7 +122,7 @@ ipcMain.on("delete-image", async (event, imgName) => {
   const filesInSelectedFolder = fs.readdirSync(selectedFolder)
   const imageFilesInSelectedFolder = filesInSelectedFolder.filter(file => file.endsWith(".png"))
   const imageFilePathsInSelectedFolder = imageFilesInSelectedFolder.map(
-    filename => "file://" + path.join(selectedFolder!, filename),
+    filename => "file://" + path.join(selectedFolder!, filename)
   )
 
   const result = imageFilePathsInSelectedFolder.map(e => {
@@ -131,7 +131,7 @@ ipcMain.on("delete-image", async (event, imgName) => {
 
     const arg = {
       name: fileName,
-      imgSrc: e,
+      imgSrc: e
     }
     return arg
   })

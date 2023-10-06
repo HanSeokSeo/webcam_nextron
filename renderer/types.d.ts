@@ -1,6 +1,11 @@
-interface ConnectedDeviceInfo {
+type ConnectedDeviceInfo = {
   deviceInfo: MediaDeviceInfo
   checked: boolean
 }
 
-export { ConnectedDeviceInfo }
+type CapturedImage = {
+  name: string
+  imgSrc: string
+}
+
+export { ConnectedDeviceInfo, CapturedImage }

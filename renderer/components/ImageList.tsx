@@ -1,19 +1,20 @@
 import Image from "next/image"
 import { FaTrashAlt } from "react-icons/fa"
-
-interface CapturedImages {
-  name: string
-  imgSrc: string
-}
+import { CapturedImage } from "types"
 
 function ImageList({
   capturedImages,
   showClickedImage,
+  setCapturedImages,
   deleteImage
 }: {
-  capturedImages: CapturedImages[]
+  capturedImages: CapturedImage[]
   showClickedImage: (src: string) => void
-  deleteImage: (imgSrc: string) => void
+  setCapturedImages: React.Dispatch<React.SetStateAction<CapturedImage[]>>
+  deleteImage: (
+    imgSrc: string,
+    setStateFunc: React.Dispatch<React.SetStateAction<CapturedImage[]>>
+  ) => void
 }) {
   const reversedPhotos = [...capturedImages].reverse()
 
@@ -36,7 +37,7 @@ function ImageList({
               <div className="m-1">{photo.name}</div>
               <button
                 className="absolute top-0 right-0 p-1 m-2"
-                onClick={() => deleteImage(photo.imgSrc)}>
+                onClick={() => deleteImage(photo.imgSrc, setCapturedImages)}>
                 <FaTrashAlt size={15} />
               </button>
             </div>
