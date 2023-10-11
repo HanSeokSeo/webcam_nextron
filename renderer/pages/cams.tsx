@@ -1,22 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useInterval } from "usehooks-ts"
-import {
-  getAgentSystem,
-  startStream,
-  stopStream,
-  trimTextToLength
-} from "utils/helpers"
+import { getAgentSystem, startStream, stopStream, trimTextToLength } from "utils/helpers"
 
 import ImageList from "@/components/ImageList"
 import ViewerMain from "@/components/ViewerMain"
 import ViewerController from "@/components/ViewerController"
 import ViewerStatus from "@/components/ViewerStatus"
 import FolderController from "@/components/FolderController"
-
-import { ipcRenderer } from "electron"
 import useConnectedDevices from "hooks/useConnectedDevices"
-import useDeviceStreamCheck from "hooks/useCheckDeviceStream"
-import { captureImage, deleteImage, useShowClickedImage } from "utils/shoot"
+import { captureImage, deleteImage } from "utils/shoot"
 
 interface CapturedImages {
   name: string
@@ -29,32 +21,20 @@ interface ConnectedDeviceInfo {
 }
 
 function Cams() {
+  const [platform, setPlatform] = useState<string>("unknown") // 브라우저 OS
+  const [isNeededCheckingStream, setIsNeededCheckingStream] = useState<boolean>(false) // 스트림 체크 여부
+  const [isDeviceChecked, setIsDeviceChecked] = useState<boolean>(false) // 기기 선택 체크 여부
+
+  const [selectedDeviceId, setSeletedDeviceId] = useState<string | undefined>(undefined) // 현재 체크된 기기 아이디
+  const [selectedDeviceLabel, setSeletedDeviceLabel] = useState<string | undefined>(undefined) // 현재 체크된 기기 라벨
+  const [previousDeviceId, setPreviousDeviceId] = useState<string | undefined>(undefined) // 바로 직전에 체크되었던 기기 아이디
+
+  const [localStream, setLocalStream] = useState<MediaStream | undefined>(undefined)
+
   const [isPlaying, setIsPlaying] = useState<boolean>(true)
   const [capturedImages, setCapturedImages] = useState<CapturedImages[]>([])
 
-  const [selectedDeviceId, setSeletedDeviceId] = useState<string | undefined>(
-    undefined
-  ) // 현재 체크된 기기 아이디
-  const [selectedDeviceLabel, setSeletedDeviceLabel] = useState<
-    string | undefined
-  >(undefined) // 현재 체크된 기기 라벨
-  const [previousDeviceId, setPreviousDeviceId] = useState<string | undefined>(
-    undefined
-  ) // 바로 직전에 체크되었던 기기 아이디
-
-  const [isDeviceChecked, setIsDeviceChecked] = useState<boolean>(false)
-
-  const [platform, setPlatform] = useState<string>("unknown")
-
-  const [isNeededCheckingStream, setIsNeededCheckingStream] =
-    useState<boolean>(false)
-
-  const [localStream, setLocalStream] = useState<MediaStream | undefined>(
-    undefined
-  )
-
-  const [isQrayDeviceStreamOn, setIsQrayDeviceStreamOn] =
-    useState<boolean>(false)
+  const [isQrayDeviceStreamOn, setIsQrayDeviceStreamOn] = useState<boolean>(false)
   const [count, setCount] = useState<number>(0)
   const [checkCase, setCheckCase] = useState<string | undefined>(undefined)
 
@@ -66,20 +46,10 @@ function Cams() {
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
-  const { deviceList, setDeviceList, getConnectedDevices } =
-    useConnectedDevices(selectedDeviceId)
-
-  // const showClickedImage = useShowClickedImage(
-  //   isCaptureMode,
-  //   setIsCaptureMode,
-  //   setClickedImageSrc
-  // )
+  const { deviceList, setDeviceList, getConnectedDevices } = useConnectedDevices(selectedDeviceId)
 
   // 연결된 기기를 통해 들어오는 stream 가져오기
-  const getDeviceStream = async (
-    checkedDeviceId: string | undefined,
-    platform: string
-  ) => {
+  const getDeviceStream = async (checkedDeviceId: string | undefined, platform: string) => {
     try {
       await navigator.mediaDevices
         .getUserMedia({
@@ -123,10 +93,7 @@ function Cams() {
           setIsNeededCheckingStream(false)
         }
 
-        if (
-          platform === "Windows" &&
-          String(error).includes("Requested device not found")
-        ) {
+        if (platform === "Windows" && String(error).includes("Requested device not found")) {
           setLocalStream(undefined)
           setSeletedDeviceId(undefined)
           setSeletedDeviceLabel(undefined)
@@ -142,10 +109,7 @@ function Cams() {
         setIsDeviceChecked(false)
         setIsNeededCheckingStream(false)
 
-        if (
-          platform === "Windows" &&
-          String(error).includes("Requested device not found")
-        ) {
+        if (platform === "Windows" && String(error).includes("Requested device not found")) {
           // setIsNeededCheckingStream(false)
         }
       }
@@ -153,10 +117,7 @@ function Cams() {
   }
 
   // 기기의 체크 상태에 따른 각종 상태값 변경
-  const handleCheckboxChange = (
-    changedDeviceId: string,
-    changedDeviceLabel: string
-  ) => {
+  const handleCheckboxChange = (changedDeviceId: string, changedDeviceLabel: string) => {
     const upDatedDeviceList: ConnectedDeviceInfo[] = []
 
     // Device Label 생성
@@ -176,8 +137,7 @@ function Cams() {
     // case: initial, 최초로 체크 버튼을 눌렀을 경우
     if (selectedDeviceId === undefined) {
       deviceList.forEach(device => {
-        const checkedValue =
-          device.deviceInfo.deviceId === changedDeviceId ? true : false
+        const checkedValue = device.deviceInfo.deviceId === changedDeviceId ? true : false
         const newElement = {
           deviceInfo: device.deviceInfo,
           checked: checkedValue
@@ -193,8 +153,7 @@ function Cams() {
     } else if (changedDeviceId !== selectedDeviceId) {
       // 체크가 되어 있는 상태에서 다른 기기를 체크한 경우
       deviceList.forEach(device => {
-        const checkedValue =
-          device.deviceInfo.deviceId === changedDeviceId ? true : false
+        const checkedValue = device.deviceInfo.deviceId === changedDeviceId ? true : false
         const newElement = {
           deviceInfo: device.deviceInfo,
           checked: checkedValue
@@ -220,9 +179,7 @@ function Cams() {
       setIsActive("undefined")
       console.log("Double Check")
     }
-    setPreviousDeviceId(
-      selectedDeviceId === undefined ? undefined : selectedDeviceId
-    )
+    setPreviousDeviceId(selectedDeviceId === undefined ? undefined : selectedDeviceId)
     setDeviceList(upDatedDeviceList)
     setLocalStream(undefined)
     setIsNeededCheckingStream(!isNeededCheckingStream)
@@ -238,11 +195,7 @@ function Cams() {
 
       console.log(localStream)
       console.log(localStream.getVideoTracks()[0])
-      console.log(
-        `os: ${platform}, muted: ${
-          localStream.getVideoTracks()[0].muted
-        }, active: ${localStream.active}`
-      )
+      console.log(`os: ${platform}, muted: ${localStream.getVideoTracks()[0].muted}, active: ${localStream.active}`)
 
       switch (platform) {
         case "Windows":
@@ -301,9 +254,21 @@ function Cams() {
   }, [])
 
   // keydown 이벤트에 반응하는 새로운 핸들러 생성
-  function handleKeyDown() {
+  const handleKeyDown = () => {
     captureImage(videoRef, setCapturedImages)
   }
+
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ video: true })
+
+    const detectedPlatform = getAgentSystem()
+    if (detectedPlatform) {
+      setPlatform(detectedPlatform)
+      getConnectedDevices()
+    }
+
+    window.addEventListener("keydown", handleKeyDown, true)
+  }, [])
 
   useInterval(() => {
     setCount(count => count + 1)
@@ -320,9 +285,7 @@ function Cams() {
     if (isNeededCheckingStream) {
       console.log("selectedDeviceId", selectedDeviceId)
       if (selectedDeviceId) {
-        localStream === undefined
-          ? getDeviceStream(selectedDeviceId, platform)
-          : checkDeviceStream(localStream)
+        localStream === undefined ? getDeviceStream(selectedDeviceId, platform) : checkDeviceStream(localStream)
       }
     } else {
       if (isDeviceChecked) {
@@ -349,6 +312,7 @@ function Cams() {
     navigator.mediaDevices.getUserMedia({ video: true })
 
     const detectedPlatform = getAgentSystem()
+
     if (detectedPlatform) {
       setPlatform(detectedPlatform)
       getConnectedDevices()
@@ -367,10 +331,7 @@ function Cams() {
             setCapturedImages={setCapturedImages}
             deleteImage={deleteImage}
           />
-          <FolderController
-            setCapturedImages={setCapturedImages}
-            platform={platform}
-          />
+          <FolderController setCapturedImages={setCapturedImages} platform={platform} />
         </div>
 
         <div className="w-[75%]">

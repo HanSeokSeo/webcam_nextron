@@ -3,7 +3,7 @@ import serve from "electron-serve"
 import { createWindow } from "./helpers"
 import * as path from "path"
 import * as fs from "fs"
-import { usb, findByIds } from "usb"
+import { usb } from "usb"
 
 const isProd: boolean = process.env.NODE_ENV === "production"
 

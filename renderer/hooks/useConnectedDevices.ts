@@ -1,31 +1,57 @@
-import { useState } from "react"
+import { useState, useEffect, Dispatch, SetStateAction } from "react"
 import { ConnectedDeviceInfo } from "types"
 
-// 컴에 연결된 기기 중에서 선택한 기기 확인
-const useConnectedDevices = (selectedDeviceId: string | undefined) => {
-  const [deviceList, setDeviceList] = useState<ConnectedDeviceInfo[]>([]) // 현재 연결된 기기 목록
+interface UseConnectedDevicesProps {
+  deviceList: ConnectedDeviceInfo[]
+  setDeviceList: Dispatch<SetStateAction<ConnectedDeviceInfo[]>>
+  getConnectedDevices: () => Promise<void>
+}
 
-  // 연결되어 있는 기기 확인
-  async function getConnectedDevices() {
-    const newDeviceList: ConnectedDeviceInfo[] = []
+const useConnectedDevices = (selectedDeviceId: string | undefined): UseConnectedDevicesProps => {
+  const [deviceList, setDeviceList] = useState<ConnectedDeviceInfo[]>([])
 
+  const getConnectedDevices = async () => {
     try {
-      await navigator.mediaDevices.enumerateDevices().then(devices => {
-        devices.forEach(deviceInfo => {
-          const checkedValue = deviceInfo.deviceId === selectedDeviceId
-          if (deviceInfo.kind === "videoinput") {
-            const newElement = { deviceInfo, checked: checkedValue }
-            newDeviceList.push(newElement)
-          }
-        })
-      })
-
-      // 새로운 기기 목록 값으로 상태값을 변경
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      const newDeviceList: ConnectedDeviceInfo[] = devices
+        .filter(deviceInfo => deviceInfo.kind === "videoinput")
+        .map(deviceInfo => ({
+          deviceInfo,
+          checked: deviceInfo.deviceId === selectedDeviceId
+        }))
       setDeviceList(newDeviceList)
     } catch (error) {
-      console.log("Error in enumerateDevices: ", error)
+      console.error("Error in enumerateDevices: ", error)
     }
   }
+
+  useEffect(() => {
+    let isUnmounted = false
+
+    const getConnectedDevices = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices()
+        const newDeviceList: ConnectedDeviceInfo[] = devices
+          .filter(deviceInfo => deviceInfo.kind === "videoinput")
+          .map(deviceInfo => ({
+            deviceInfo,
+            checked: deviceInfo.deviceId === selectedDeviceId
+          }))
+
+        if (!isUnmounted) {
+          setDeviceList(newDeviceList)
+        }
+      } catch (error) {
+        console.error("Error in enumerateDevices: ", error)
+      }
+    }
+
+    getConnectedDevices()
+
+    return () => {
+      isUnmounted = true
+    }
+  }, [selectedDeviceId])
 
   return { deviceList, setDeviceList, getConnectedDevices }
 }

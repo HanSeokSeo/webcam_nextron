@@ -22,10 +22,7 @@ export function getCurrentDateTime(): string {
 }
 
 //* debounce 구현
-export default function debounce<T extends (...args: any[]) => any>(
-  callback: T,
-  delay: number
-) {
+export default function debounce<T extends (...args: any[]) => any>(callback: T, delay: number) {
   let timeoutId: NodeJS.Timeout
 
   return function (this: ThisParameterType<T>, ...args: Parameters<T>): void {
@@ -38,8 +35,7 @@ export default function debounce<T extends (...args: any[]) => any>(
 
 export function getAgentSystem(): string {
   const ua = navigator.userAgent
-  const isMobile =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
 
   const platform = navigator.platform.toLowerCase()
   if (platform.startsWith("win")) return "Windows"
@@ -76,10 +72,7 @@ export async function stopStream(
   }
 }
 
-export function startStream(
-  videoRef: MutableRefObject<HTMLVideoElement | null>,
-  stream: MediaStream
-) {
+export function startStream(videoRef: MutableRefObject<HTMLVideoElement | null>, stream: MediaStream) {
   if (videoRef.current) {
     videoRef.current.srcObject = null
     videoRef.current.srcObject = stream
@@ -92,8 +85,4 @@ export function startStream(
         console.log("Video playback failed", e)
       })
   }
-}
-
-function addKeyEvent(eventFunction: () => void) {
-  window.addEventListener("keydown", eventFunction)
 }
