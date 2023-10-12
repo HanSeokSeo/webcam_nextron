@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useInterval } from "usehooks-ts"
 import { getAgentSystem, startStream, stopStream, trimTextToLength } from "utils/helpers"
 
-import ImageList from "@/components/ImageList"
+import ViewerImageList from "@/components/ViewerImageList"
 import ViewerMain from "@/components/ViewerMain"
 import ViewerController from "@/components/ViewerController"
 import ViewerStatus from "@/components/ViewerStatus"
@@ -325,7 +325,7 @@ function Cams() {
     <>
       <div className="flex justify-center w-screen h-screen">
         <div className="w-[25%] flex flex-col h-screen">
-          <ImageList
+          <ViewerImageList
             capturedImages={capturedImages}
             showClickedImage={showClickedImage}
             setCapturedImages={setCapturedImages}
