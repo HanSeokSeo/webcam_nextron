@@ -3,15 +3,24 @@ import serve from "electron-serve"
 import { createWindow } from "./helpers"
 import * as path from "path"
 import * as fs from "fs"
+import * as os from "os"
 import { usb } from "usb"
 
 const isProd: boolean = process.env.NODE_ENV === "production"
 
 let mainWindow: BrowserWindow | null = null
 let selectedFolder: string | null = null
+let qrayImagePath: string
 
-const desktopPath = path.join(require("os").homedir(), "Desktop") // 로컬 PC의 "Desktop" 폴더의 경로
-const qrayImagePath = path.join(desktopPath, "qrayimage") //
+if (os.platform() === "darwin") {
+  // 맥일 경우 바탕화면 경로 설정
+  const desktopPath = path.join(os.homedir(), "Desktop")
+  qrayImagePath = path.join(desktopPath, "qrayimage")
+} else if (os.platform() === "win32") {
+  // 윈도우일 경우 C 드라이브 경로 설정
+  const driveLetter = "C:"
+  qrayImagePath = path.join(driveLetter, "qrayimage")
+}
 
 const handleUSBAttach = (device: any) => {
   console.log("USB Device Attached")

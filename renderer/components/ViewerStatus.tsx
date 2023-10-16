@@ -6,28 +6,28 @@ function ViewerStatus({
   isMuted,
   isActive,
   isCaptureMode,
-  setIsCaptureMode,
-  setIsNeededCheckingStream,
+  setIsCaptureMode
 }: {
-  count: number;
-  platform: string;
-  isDeviceChecked: boolean;
-  isQrayDeviceStreamOn: boolean;
-  isMuted: boolean | string;
-  isActive: boolean | string;
-  isCaptureMode: boolean;
-  setIsCaptureMode: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsNeededCheckingStream: React.Dispatch<React.SetStateAction<boolean>>;
+  count: number
+  platform: string
+  isDeviceChecked: boolean
+  isQrayDeviceStreamOn: boolean
+  isMuted: boolean | string
+  isActive: boolean | string
+  isCaptureMode: boolean
+  setIsCaptureMode: React.Dispatch<React.SetStateAction<boolean>>
 }) {
   const backToCaptureMode = () => {
-    setIsCaptureMode(true);
-  };
+    setIsCaptureMode(true)
+  }
   return (
     <div className="flex-col w-1/5 p-2 justify-between flex">
       <div className="">
         <div className="text-xl my-1">DEVICE STATUS</div>
         <ul>
-          <li className="list-none list-inside indent-1.5 before:content-['•'] before:text-lg before:pr-1">COUNT : {count}</li>
+          <li className="list-none list-inside indent-1.5 before:content-['•'] before:text-lg before:pr-1">
+            COUNT : {count}
+          </li>
           <li className="list-none list-inside indent-1.5 before:content-['•'] before:text-lg before:pr-1">
             PLATFORM : {platform}
           </li>
@@ -53,14 +53,13 @@ function ViewerStatus({
               isCaptureMode ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-700"
             } text-white font-bold py-1 px-2 rounded text-sm`}
             onClick={backToCaptureMode}
-            disabled={isCaptureMode}
-          >
+            disabled={isCaptureMode}>
             Back to Capture mode
           </button>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default ViewerStatus;
+export default ViewerStatus

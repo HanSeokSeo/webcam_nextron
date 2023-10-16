@@ -345,7 +345,6 @@ function Cams() {
               isActive={isActive}
               isCaptureMode={isCaptureMode}
               setIsCaptureMode={setIsCaptureMode}
-              setIsNeededCheckingStream={setIsNeededCheckingStream}
             />
             <ViewerMain
               videoRef={videoRef}
