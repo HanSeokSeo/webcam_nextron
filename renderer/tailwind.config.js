@@ -3,6 +3,11 @@
 module.exports = {
   content: ["./renderer/pages/**/*.{js,ts,jsx,tsx}", "./renderer/components/**/*.{js,ts,jsx,tsx}"],
   theme: {
+    screens: {
+      sm: { min: "390px", max: "640px" },
+      md: { min: "641px", max: "767px" },
+      lg: { min: "768px", max: "1023px" }
+    },
     extend: {
       colors: {
         "scrollbar-bg": "#f6f8fa",

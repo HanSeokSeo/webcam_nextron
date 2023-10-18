@@ -2,12 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useInterval } from "usehooks-ts"
 import { getAgentSystem, startStream, stopStream, trimTextToLength } from "@utils/helpers"
 import { ConnectedDeviceInfo, CapturedImage } from "@typings/imaging"
-
-import ViewerImageList from "./ViewerImageList"
-import ViewerMain from "./ViewerMain"
-import ViewerController from "./ViewerController"
-import ViewerStatus from "./ViewerStatus"
-import FolderController from "./FolderController"
+import { ViewerImageList, ViewerMain, ViewerController, ViewerStatus, FolderController } from "../index"
 import useConnectedDevices from "@hooks/useConnectedDevices"
 import { captureImage, deleteImage } from "@utils/shoot"
 

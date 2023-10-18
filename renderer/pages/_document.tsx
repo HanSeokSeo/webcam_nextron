@@ -4,7 +4,7 @@ class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head>Imaging Page</Head>
+        <Head />
         <body>
           <Main />
           <NextScript />

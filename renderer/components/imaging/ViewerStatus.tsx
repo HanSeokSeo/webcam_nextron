@@ -42,7 +42,7 @@ const ViewerStatus = ({
     setIsCaptureMode(true)
   }
   return (
-    <div className="flex-col w-1/5 p-2 justify-between flex">
+    <div className="flex-col w-1/4 pl-2 justify-between flex">
       <div className="">
         <div className="text-sm my-1">DEVICE STATUS</div>
         <ul className="text-xs">

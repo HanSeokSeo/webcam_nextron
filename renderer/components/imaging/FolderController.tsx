@@ -39,34 +39,42 @@ const FolderController = ({ setCapturedImages, platform }: FolderControllerProps
   const [folderPath, setFolderPath] = useState<string>("")
   const [selectedPatient, setSelectedPatient] = useState<string>("")
 
+  // 디렉토리 다이얼로그 열기 함수
   const openDirectoryDialog = async () => {
-    ipcRenderer.send("open-directory-dialog")
+    ipcRenderer.send("open-directory-dialog") // 메인 프로세스에 디렉토리 다이얼로그 열기 메시지 전송
   }
 
   useEffect(() => {
-    ipcRenderer.on("selected-folder", (_, folderPath) => {
-      const separator = platform === "macOS" ? "/" : `\\` // 운영 체제에 따라 적절한 경로 구분자를 설정합니다. (macOS의 경우 '/', 그 외의 경우 '\\')
+    // 디렉토리 선택 시 이벤트 핸들러
+    const handleSelectedFolder = (folderPath: string) => {
+      const separator = platform === "macOS" ? "/" : `\\`
       const parts = folderPath.split(separator)
       const result = parts.slice(1, 5).join(separator)
       const patient = parts.pop()
 
       setFolderPath(result)
-      setSelectedPatient(patient)
-    })
+      setSelectedPatient(patient || "")
+    }
 
-    ipcRenderer.on("selected-files", (_, filePaths) => {
-      const fileList = filePaths.map((filePath: string) => ({
+    // 선택된 파일 목록 이벤트 핸들러
+    const handleSelectedFiles = (filePaths: string[]) => {
+      const fileList: CapturedPhotos[] = filePaths.map((filePath: string) => ({
         name: path.basename(filePath),
         imgSrc: filePath
       }))
 
+      // 상태 업데이트: 캡처된 이미지 목록 설정
       setCapturedImages(fileList)
+    }
 
-      return () => {
-        ipcRenderer.removeAllListeners("selected-files")
-      }
-    })
-  }, [platform])
+    ipcRenderer.on("selected-folder", (_, folderPath) => handleSelectedFolder(folderPath))
+    ipcRenderer.on("selected-files", (_, filePath) => handleSelectedFiles(filePath))
+
+    return () => {
+      ipcRenderer.removeListener("selected-folder", handleSelectedFolder)
+      ipcRenderer.removeListener("selected-files", handleSelectedFiles)
+    }
+  }, [platform, setCapturedImages])
 
   return (
     <div className="border-b-2 border-l-2 border-slate-500 h-1/5 p-2">
