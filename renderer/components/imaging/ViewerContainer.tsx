@@ -1,26 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useInterval } from "usehooks-ts"
-import { getAgentSystem, startStream, stopStream, trimTextToLength } from "utils/helpers"
+import { getAgentSystem, startStream, stopStream, trimTextToLength } from "@utils/helpers"
+import { ConnectedDeviceInfo, CapturedImage } from "@typings/imaging"
 
-import ViewerImageList from "@/components/ViewerImageList"
-import ViewerMain from "@/components/ViewerMain"
-import ViewerController from "@/components/ViewerController"
-import ViewerStatus from "@/components/ViewerStatus"
-import FolderController from "@/components/FolderController"
-import useConnectedDevices from "hooks/useConnectedDevices"
-import { captureImage, deleteImage } from "utils/shoot"
+import ViewerImageList from "./ViewerImageList"
+import ViewerMain from "./ViewerMain"
+import ViewerController from "./ViewerController"
+import ViewerStatus from "./ViewerStatus"
+import FolderController from "./FolderController"
+import useConnectedDevices from "@hooks/useConnectedDevices"
+import { captureImage, deleteImage } from "@utils/shoot"
 
-interface CapturedImages {
-  name: string
-  imgSrc: string
-}
-
-interface ConnectedDeviceInfo {
-  deviceInfo: MediaDeviceInfo
-  checked: boolean
-}
-
-function Cams() {
+const ViewerContainer = () => {
   const [platform, setPlatform] = useState<string>("unknown") // 브라우저 OS
   const [isNeededCheckingStream, setIsNeededCheckingStream] = useState<boolean>(false) // 스트림 체크 여부
   const [isDeviceChecked, setIsDeviceChecked] = useState<boolean>(false) // 기기 선택 체크 여부
@@ -32,7 +23,7 @@ function Cams() {
   const [localStream, setLocalStream] = useState<MediaStream | undefined>(undefined)
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true)
-  const [capturedImages, setCapturedImages] = useState<CapturedImages[]>([])
+  const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([])
 
   const [isQrayDeviceStreamOn, setIsQrayDeviceStreamOn] = useState<boolean>(false)
   const [count, setCount] = useState<number>(0)
@@ -305,7 +296,7 @@ function Cams() {
         setIsQrayDeviceStreamOn(false)
       }
     }
-  }, 2000)
+  }, 500)
 
   // 최초 실행시 카메라 허용과 OS 탐지
   useEffect(() => {
@@ -365,4 +356,4 @@ function Cams() {
   )
 }
 
-export default Cams
+export default ViewerContainer

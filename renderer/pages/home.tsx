@@ -1,22 +1,13 @@
-import React from "react"
+import { NextPage } from "next"
 import Head from "next/head"
-import Link from "next/link"
-import Cams from "./cams"
+import ViewerContainer from "@components/imaging/ViewerContainer"
 
-function Home() {
+const Imaging: NextPage = () => {
   return (
-    <React.Fragment>
-      <Head>
-        <title>QRAY VIEWER</title>
-      </Head>
-      <Cams />
-      {/* <main className="flex flex-col items-center justify-center min-w-screen min-h-screen p-24">
-        <Link href="/cams">
-          <a className="btn-blue text-5xl">Go to Qray Viewer</a>
-        </Link>
-      </main> */}
-    </React.Fragment>
+    <div className="flex flex-row h-screen">
+      <ViewerContainer />
+    </div>
   )
 }
 
-export default Home
+export default Imaging

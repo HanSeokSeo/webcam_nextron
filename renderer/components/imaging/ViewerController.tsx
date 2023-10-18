@@ -1,22 +1,36 @@
+import { ConnectedDeviceInfo } from "types"
 import { createRef, useEffect, useRef } from "react"
-import React from "react"
+import { BrowserWindow, globalShortcut } from "electron"
 
-interface ConnectedDeviceInfo {
-  deviceInfo: MediaDeviceInfo
-  checked: boolean
-}
-
-function ViewerController({
-  isPlaying,
-  deviceList,
-  handleCheckboxChange,
-  handleKeyDown
-}: {
+/**
+ * ViewerController 컴포넌트의 프로퍼티를 정의하는 인터페이스
+ * @interface ViewerControllerProps
+ * @property {boolean} isPlaying - 재생 상태 여부를 나타내는 값
+ * @property {ConnectedDeviceInfo[]} deviceList - 연결된 디바이스 목록
+ * @property {any} handleCheckboxChange - 체크박스 변경 이벤트 핸들러 함수
+ * @property {() => void} handleKeyDown - 키 다운 이벤트 핸들러 함수
+ */
+interface ViewerControllerProps {
   isPlaying: boolean
   deviceList: ConnectedDeviceInfo[]
   handleCheckboxChange: any
   handleKeyDown: () => void
-}) {
+}
+
+/**
+ * 뷰어 컨트롤러 컴포넌트.
+ * 재생 버튼, 캡처 버튼, 디바이스 목록을 표시하고 관리합니다.
+ *
+ * @function ViewerController
+ * @param {ViewerControllerProps} props - 컴포넌트 프로퍼티들
+ * @returns {JSX.Element}
+ */
+const ViewerController = ({
+  isPlaying,
+  deviceList,
+  handleCheckboxChange,
+  handleKeyDown
+}: ViewerControllerProps): JSX.Element => {
   const captureRef = useRef<HTMLButtonElement | null>(null)
   const checkboxRefs = useRef<React.RefObject<HTMLInputElement>[]>([])
 
@@ -26,9 +40,22 @@ function ViewerController({
   }
 
   const handleInput = (deviceId: string, deviceLabel: string, index: number) => {
-    console.log("deviceLabel", deviceLabel)
     handleCheckboxChange(deviceId, deviceLabel)
-    checkboxRefs.current[index].current?.blur()
+
+    const isProduction: boolean = process.env.NODE_ENV === "production"
+
+    // 개발모드 & 프로덕션 모드 구분하여 체크박스 포커스 해제 실행
+    if (isProduction) {
+      const blurShortcut = globalShortcut.register("Escape", () => {
+        globalShortcut.unregister("Escape")
+      })
+
+      if (!blurShortcut) {
+        console.error("Failed to register global shortcut")
+      }
+    } else {
+      checkboxRefs.current[index].current?.blur()
+    }
   }
 
   useEffect(() => {
@@ -64,7 +91,6 @@ function ViewerController({
       <div className="w-3/5 py-2">
         <div className="flex items-center space-x-2 h-[20%]">
           <div className="text-[1.25rem]">Connected Device List</div>
-          {/* <RefreshConnectDevices className="w-5 h-5 p-[0.15rem] bg-white rounded-full cursor-pointer hover:bg-slate-600" /> */}
         </div>
 
         <div className="overflow-y-scroll h-[80%]">
