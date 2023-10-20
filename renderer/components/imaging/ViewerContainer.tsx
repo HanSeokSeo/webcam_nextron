@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useInterval } from "usehooks-ts"
-import { getAgentSystem, startStream, stopStream, trimTextToLength } from "@utils/helpers"
+import { getAgentSystem, makeSimpleLabel, startStream, stopStream, trimTextToLength } from "@utils/helpers"
 import { ConnectedDeviceInfo, CapturedImage } from "@typings/imaging"
 import { ViewerImageList, ViewerMain, ViewerController, ViewerStatus, FolderController } from "../index"
 import useConnectedDevices from "@hooks/useConnectedDevices"
@@ -35,7 +35,7 @@ const ViewerContainer = () => {
   const { deviceList, setDeviceList, getConnectedDevices } = useConnectedDevices(selectedDeviceId)
 
   // 연결된 기기를 통해 들어오는 stream 가져오기
-  const getDeviceStream = async (checkedDeviceId: string | undefined, platform: string) => {
+  const getDeviceStream = async (checkedDeviceId: string | undefined) => {
     try {
       await navigator.mediaDevices
         .getUserMedia({
@@ -103,27 +103,16 @@ const ViewerContainer = () => {
   }
 
   // 기기의 체크 상태에 따른 각종 상태값 변경
-  const handleCheckboxChange = (changedDeviceId: string, changedDeviceLabel: string) => {
+  const handleCheckboxChange = (device: ConnectedDeviceInfo) => {
+    const checkedDeviceId = device.deviceInfo.deviceId
+    const checkedDeviceLabel = makeSimpleLabel(device.deviceInfo.label) // deviceLabel simplify
+
     const upDatedDeviceList: ConnectedDeviceInfo[] = []
-
-    // Device Label 생성
-    const makeLabel = (targetLabel: string) => {
-      const arg = targetLabel.toUpperCase()
-
-      if (arg.includes("QRAYCAM")) return "QRAYCAM"
-      if (arg.includes("QRAYPEN")) return "QRAYPEN"
-    }
-
-    let deviceLabel
-
-    if (changedDeviceLabel) {
-      deviceLabel = makeLabel(changedDeviceLabel)
-    }
 
     // case: initial, 최초로 체크 버튼을 눌렀을 경우
     if (selectedDeviceId === undefined) {
       deviceList.forEach(device => {
-        const checkedValue = device.deviceInfo.deviceId === changedDeviceId ? true : false
+        const checkedValue = device.deviceInfo.deviceId === checkedDeviceId ? true : false
         const newElement = {
           deviceInfo: device.deviceInfo,
           checked: checkedValue
@@ -132,14 +121,14 @@ const ViewerContainer = () => {
       })
 
       setCheckCase("initial")
-      setSeletedDeviceId(changedDeviceId)
-      setSeletedDeviceLabel(deviceLabel)
+      setSeletedDeviceId(checkedDeviceId)
+      setSeletedDeviceLabel(checkedDeviceLabel)
       setIsDeviceChecked(true)
       console.log("Initial Check")
-    } else if (changedDeviceId !== selectedDeviceId) {
+    } else if (checkedDeviceId !== selectedDeviceId) {
       // 체크가 되어 있는 상태에서 다른 기기를 체크한 경우
       deviceList.forEach(device => {
-        const checkedValue = device.deviceInfo.deviceId === changedDeviceId ? true : false
+        const checkedValue = device.deviceInfo.deviceId === checkedDeviceId ? true : false
         const newElement = {
           deviceInfo: device.deviceInfo,
           checked: checkedValue
@@ -147,8 +136,8 @@ const ViewerContainer = () => {
         upDatedDeviceList.push(newElement)
       })
       setCheckCase("single")
-      setSeletedDeviceId(changedDeviceId)
-      setSeletedDeviceLabel(deviceLabel)
+      setSeletedDeviceId(checkedDeviceId)
+      setSeletedDeviceLabel(checkedDeviceLabel)
       setIsDeviceChecked(true)
       console.log("Sigle Check")
     } else {
@@ -271,27 +260,27 @@ const ViewerContainer = () => {
     if (isNeededCheckingStream) {
       console.log("selectedDeviceId", selectedDeviceId)
       if (selectedDeviceId) {
-        localStream === undefined ? getDeviceStream(selectedDeviceId, platform) : checkDeviceStream(localStream)
+        localStream === undefined ? getDeviceStream(selectedDeviceId) : checkDeviceStream(localStream)
       }
     } else {
       if (isDeviceChecked) {
         switch (checkCase) {
           case "initial":
             console.log("1")
-            getDeviceStream(selectedDeviceId, platform)
+            getDeviceStream(selectedDeviceId)
             setIsNeededCheckingStream(true)
             break
           case "single":
             console.log("2")
             stopStream(videoRef, previousDeviceId)
-            getDeviceStream(selectedDeviceId, platform)
+            getDeviceStream(selectedDeviceId)
             setIsNeededCheckingStream(true)
         }
       } else {
         setIsQrayDeviceStreamOn(false)
       }
     }
-  }, 500)
+  }, 2000)
 
   // 최초 실행시 카메라 허용과 OS 탐지
   useEffect(() => {

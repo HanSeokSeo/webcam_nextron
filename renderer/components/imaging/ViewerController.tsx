@@ -48,8 +48,8 @@ const ViewerController = ({
     captureRef.current?.blur()
   }
 
-  const handleInput = (deviceId: string, deviceLabel: string, index: number) => {
-    handleCheckboxChange(deviceId, deviceLabel)
+  const handleInput = (device: ConnectedDeviceInfo, index: number) => {
+    handleCheckboxChange(device)
 
     const isProduction: boolean = process.env.NODE_ENV === "production"
 
@@ -132,9 +132,10 @@ const ViewerController = ({
                   type="checkbox"
                   checked={device.checked}
                   className={`mr-2 h-5 w-5 ${key}`}
-                  onChange={() => handleInput(device.deviceInfo.deviceId, device.deviceInfo.label, key)}
+                  onChange={() => handleInput(device, key)}
                 />
                 {device.deviceInfo.label || `Device ${key + 1}`}
+                <button onClick={() => console.log(device)}>Log Device</button>
               </li>
             ))}
           </ul>

@@ -86,3 +86,10 @@ export function startStream(videoRef: MutableRefObject<HTMLVideoElement | null>,
       })
   }
 }
+
+// device Label 생성
+export function makeSimpleLabel(targetLabel: string) {
+  const arg = targetLabel.toUpperCase()
+  if (arg.includes("QRAYCAM")) return "QRAYCAM"
+  if (arg.includes("QRAYPEN")) return "QRAYPEN"
+}
