@@ -309,8 +309,8 @@ const ViewerContainer = () => {
 
   return (
     <>
-      <div className="flex justify-center w-screen h-screen">
-        <div className="w-[25%] flex flex-col h-screen">
+      <div className="flex h-screen w-screen justify-center">
+        <div className="flex h-screen w-[25%] flex-col">
           <ViewerImageList
             capturedImages={capturedImages}
             showClickedImage={showClickedImage}
@@ -321,7 +321,7 @@ const ViewerContainer = () => {
         </div>
 
         <div className="w-[75%]">
-          <div className="flex h-4/5 border-slate-500 border-2">
+          <div className="flex h-4/5 border-2 border-slate-500">
             <ViewerStatus
               count={count}
               platform={platform}
@@ -329,8 +329,6 @@ const ViewerContainer = () => {
               isQrayDeviceStreamOn={isQrayDeviceStreamOn}
               isMuted={isMuted}
               isActive={isActive}
-              isCaptureMode={isCaptureMode}
-              setIsCaptureMode={setIsCaptureMode}
             />
             <ViewerMain
               videoRef={videoRef}
@@ -341,9 +339,11 @@ const ViewerContainer = () => {
           </div>
           <ViewerController
             isPlaying={isPlaying}
+            isCaptureMode={isCaptureMode}
             deviceList={deviceList}
             handleCheckboxChange={handleCheckboxChange}
             handleKeyDown={handleKeyDown}
+            setIsCaptureMode={setIsCaptureMode}
           />
         </div>
       </div>

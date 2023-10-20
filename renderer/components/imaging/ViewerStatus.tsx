@@ -17,8 +17,6 @@ interface ViewerStatusProps {
   isQrayDeviceStreamOn: boolean
   isMuted: boolean | string
   isActive: boolean | string
-  isCaptureMode: boolean
-  setIsCaptureMode: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -34,50 +32,32 @@ const ViewerStatus = ({
   isDeviceChecked,
   isQrayDeviceStreamOn,
   isMuted,
-  isActive,
-  isCaptureMode,
-  setIsCaptureMode
+  isActive
 }: ViewerStatusProps): JSX.Element => {
-  const backToCaptureMode = () => {
-    setIsCaptureMode(true)
-  }
   return (
-    <div className="flex-col w-1/4 pl-2 justify-between flex">
+    <div className="flex w-1/4 flex-col justify-between pl-2 pt-3">
       <div className="">
-        <div className="text-sm my-1">DEVICE STATUS</div>
-        <ul className="text-xs">
-          <li className="list-none list-inside indent-1.5 before:content-['•'] before:text-lg before:pr-1">
+        <div className="3xl:text-2xl my-1 text-sm xl:text-base">DEVICE STATUS</div>
+        <ul className="3xl:text-xl text-xs xl:mt-2 xl:text-sm">
+          <li className="list-inside list-none indent-1.5 before:pr-1 before:text-lg before:content-['•'] xl:mb-2">
             COUNT : {count}
           </li>
-          <li className="list-none list-inside indent-1.5 before:content-['•'] before:text-lg before:pr-1">
+          <li className="list-inside list-none indent-1.5 before:pr-1 before:text-lg before:content-['•'] xl:mb-2">
             PLATFORM : {platform}
           </li>
-          <li className="list-none list-inside indent-1.5 before:content-['•'] before:text-lg before:pr-1">
+          <li className="list-inside list-none indent-1.5 before:pr-1 before:text-lg before:content-['•'] xl:mb-2">
             DEVICE_CHECK : {isDeviceChecked ? "ON" : "OFF"}
           </li>
-          <li className="list-none list-inside indent-1.5 before:content-['•'] before:text-lg before:pr-1">
+          <li className="list-inside list-none indent-1.5 before:pr-1 before:text-lg before:content-['•'] xl:mb-2">
             QRAY_STREAM : {isQrayDeviceStreamOn ? "ON" : "OFF"}
           </li>
-          <li className="list-none list-inside indent-1.5 before:content-['•'] before:text-lg before:pr-1">
+          <li className="list-inside list-none indent-1.5 before:pr-1 before:text-lg before:content-['•'] xl:mb-2">
             MUTED: {typeof isMuted === "boolean" ? (isMuted ? "TRUE" : "FALSE") : "undefined"}
           </li>
-          <li className="list-none list-inside indent-1.5 before:content-['•'] before:text-lg before:pr-1">
+          <li className="list-inside list-none indent-1.5 before:pr-1 before:text-lg before:content-['•'] xl:mb-2">
             ACTIVE: {typeof isActive === "boolean" ? (isActive ? "TRUE" : "FALSE") : "undefined"}
           </li>
         </ul>
-      </div>
-      <div className="flex flex-col items-center space-y-2">
-        <div className="mr-2 text-lg font-bold">{isCaptureMode ? "Capture Mode" : "View Mode"}</div>
-        <div>
-          <button
-            className={`${
-              isCaptureMode ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-700"
-            } text-white font-bold py-1 px-2 rounded text-xs`}
-            onClick={backToCaptureMode}
-            disabled={isCaptureMode}>
-            Back to <br /> Capture mode
-          </button>
-        </div>
       </div>
     </div>
   )

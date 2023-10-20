@@ -4,9 +4,12 @@ module.exports = {
   content: ["./renderer/pages/**/*.{js,ts,jsx,tsx}", "./renderer/components/**/*.{js,ts,jsx,tsx}"],
   theme: {
     screens: {
-      sm: { min: "390px", max: "640px" },
-      md: { min: "641px", max: "767px" },
-      lg: { min: "768px", max: "1023px" }
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+      xl: "1280px",
+      "2xl": "1536px",
+      "3xl": "1920px"
     },
     extend: {
       colors: {
