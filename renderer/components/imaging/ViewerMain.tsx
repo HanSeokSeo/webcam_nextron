@@ -25,14 +25,16 @@ interface ViewerProps {
  */
 const ViewerMain = ({ videoRef, isQrayDeviceStreamOn, isCaptureMode, clickedImageSrc }: ViewerProps): JSX.Element => {
   return (
-    <div className="flex flex-col w-full border-l-2 border-slate-500">
-      <div className="h-[5%] ml-3 mt-3 ">QrayStream {isQrayDeviceStreamOn ? "ON" : "OFF"}</div>
-      <div className={`h-[95%] w-full flex justify-center ${isCaptureMode ? "" : "hidden"}`}>
-        <video ref={videoRef} muted className={`object-cover w-full h-full ${isQrayDeviceStreamOn ? "" : "hidden"}`} />
+    <div className="flex w-full flex-col border-l-2 border-slate-500">
+      <div className={`flex h-[7%] ${isQrayDeviceStreamOn ? "animate-blink" : ""} items-center pl-2`}>
+        QrayStream {isQrayDeviceStreamOn ? "ON" : "OFF"}
+      </div>
+      <div className={`flex h-[93%] w-full justify-center ${isCaptureMode ? "" : "hidden"}`}>
+        <video ref={videoRef} muted className={`h-full w-full object-cover ${isQrayDeviceStreamOn ? "" : "hidden"}`} />
         <div className={`flex flex-col items-center justify-center text-2xl  ${isQrayDeviceStreamOn ? "hidden" : ""}`}>
           <p>Qray device is not connected.</p>
           <p>After connecting the cables and turn on the power.</p>
-          <div className="w-[250px] h-[150px] relative flex-col mt-6">
+          <div className="relative mt-6 h-[150px] w-[250px] flex-col">
             <Image
               src="/images/qray_yellow.jpeg"
               alt="Qray normal connection"
@@ -44,8 +46,8 @@ const ViewerMain = ({ videoRef, isQrayDeviceStreamOn, isCaptureMode, clickedImag
         </div>
       </div>
       {clickedImageSrc ? (
-        <div className={`h-[95%] w-full flex justify-center ${isCaptureMode ? "hidden" : ""}`}>
-          <div className="w-full h-full relative flex-col">
+        <div className={`flex h-[95%] w-full justify-center ${isCaptureMode ? "hidden" : ""}`}>
+          <div className="relative h-full w-full flex-col">
             <Image src={clickedImageSrc} alt="Qray normal connection" layout="fill" objectFit="cover" priority />
           </div>
         </div>

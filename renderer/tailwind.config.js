@@ -16,6 +16,15 @@ module.exports = {
         "scrollbar-bg": "#f6f8fa",
         "scrollbar-thumb": "#888"
       },
+      keyframes: {
+        blink: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.2" }
+        }
+      },
+      animation: {
+        blink: "blink 1s linear infinite"
+      },
       scrollbar: theme => ({
         thin: {
           width: "4px", // 스크롤바 너비 조절
