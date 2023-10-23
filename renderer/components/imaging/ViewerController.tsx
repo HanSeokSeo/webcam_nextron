@@ -135,7 +135,6 @@ const ViewerController = ({
                   onChange={() => handleInput(device, key)}
                 />
                 {device.deviceInfo.label || `Device ${key + 1}`}
-                <button onClick={() => console.log(device)}>Log Device</button>
               </li>
             ))}
           </ul>

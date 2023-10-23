@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { FaTrashAlt } from "react-icons/fa"
 import { CapturedImage } from "@typings/imaging"
+import { useEffect, useRef } from "react"
 
 /**
  * ViewerImageList 컴포넌트의 프로퍼티를 정의하는 인터페이스
@@ -31,13 +32,22 @@ const ViewerImageList = ({
   deleteImage
 }: ViewerImageListProps): JSX.Element => {
   const reversedPhotos = [...capturedImages].reverse()
+  const listRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = 0
+    }
+  }, [capturedImages])
 
   return (
-    <div className="flex flex-col overflow-y-scroll scrollbar-thin border-slate-500 border-l-2 border-y-2 w-full h-4/5">
+    <div
+      className="scrollbar-thin flex h-4/5 w-full flex-col overflow-y-scroll border-y-2 border-l-2 border-slate-500"
+      ref={listRef}>
       {reversedPhotos.map((photo, idx) => {
         if (photo && photo.imgSrc != null && photo.imgSrc != undefined) {
           return (
-            <div className="relative flex flex-col border-slate-500 border-b-2 p-2" key={idx}>
+            <div className="relative flex flex-col border-b-2 border-slate-500 p-2" key={idx}>
               <Image
                 className="rounded-md"
                 src={photo.imgSrc}
@@ -48,7 +58,7 @@ const ViewerImageList = ({
               />
               <div className="m-1">{photo.name}</div>
               <button
-                className="absolute top-0 right-0 p-1 m-2"
+                className="absolute right-0 top-0 m-2 p-1"
                 onClick={() => deleteImage(photo.imgSrc, setCapturedImages)}>
                 <FaTrashAlt size={15} />
               </button>

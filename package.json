@@ -20,6 +20,7 @@
   "dependencies": {
     "electron-serve": "^1.1.0",
     "electron-store": "^8.1.0",
+    "next-themes": "^0.2.1",
     "postinstall": "^0.8.0",
     "usb": "^2.11.0"
   },
@@ -35,7 +36,6 @@
     "nextron": "^8.7.0",
     "postcss": "^8.4.13",
     "prettier": "^3.0.3",
-    "prettier-plugin-tailwindcss": "^0.5.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",

@@ -298,8 +298,8 @@ const ViewerContainer = () => {
 
   return (
     <>
-      <div className="flex h-screen w-screen justify-center">
-        <div className="flex h-screen w-[25%] flex-col">
+      <div className="flex h-[95%] w-screen justify-center">
+        <div className="flex w-[25%] flex-col">
           <ViewerImageList
             capturedImages={capturedImages}
             showClickedImage={showClickedImage}
