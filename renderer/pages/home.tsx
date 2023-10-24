@@ -1,5 +1,4 @@
 import { NextPage } from "next"
-import Head from "next/head"
 import ViewerContainer from "@components/imaging/ViewerContainer"
 import TopBar from "@components/theme/TopBar"
 

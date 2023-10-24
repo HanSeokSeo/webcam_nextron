@@ -123,7 +123,7 @@ const ViewerController = ({
         <div className="flex h-[20%] items-center space-x-2">
           <div className="text-[1.25rem]">Connected Device List</div>
         </div>
-        <div className="h-[80%] overflow-y-scroll">
+        <div className="h-[80%] overflow-y-auto">
           <ul className="mt-2 pl-2">
             {deviceList.map((device, key) => (
               <li key={key} className="mt-2 flex items-center">

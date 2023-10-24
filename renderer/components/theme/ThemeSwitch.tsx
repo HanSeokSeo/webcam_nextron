@@ -12,7 +12,7 @@ const ThemeSwitch = () => {
   return (
 <button
   onClick={toggleTheme}
-  className="rounded-md p-1 px-2 text-sm text-gray-700 dark:bg-green-500 dark:bg-opacity-20 dark:text-gray-50 flex items-center bg-gray-200"
+  className="p-2 px-2 text-sm text-gray-700 dark:bg-green-500 dark:bg-opacity-20 dark:text-gray-50 flex items-center bg-gray-200 rounded"
 >
   {isDarkMode? (
     <>
