@@ -1,6 +1,6 @@
 import { ConnectedDeviceInfo } from "@typings/imaging"
+import { globalShortcut } from "electron"
 import { createRef, useEffect, useRef } from "react"
-import { BrowserWindow, globalShortcut } from "electron"
 
 /**
  * ViewerController 컴포넌트의 프로퍼티를 정의하는 인터페이스

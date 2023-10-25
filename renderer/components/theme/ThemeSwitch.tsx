@@ -1,5 +1,5 @@
-import { useTheme } from "next-themes"
-import { FaSun, FaMoon } from "react-icons/fa";
+import { useTheme } from "next-themes";
+import { FaMoon, FaSun } from "react-icons/fa";
 
 const ThemeSwitch = () => {
   const { theme, setTheme } = useTheme()
