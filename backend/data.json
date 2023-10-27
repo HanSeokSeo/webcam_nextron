@@ -1,0 +1,88 @@
+{
+  "patient": [
+    {
+      "chartNumber": "P12345",
+      "name": "John Doe",
+      "dateOfBirth": "1985-05-15",
+      "gender": "Male",
+      "attendingPhysician": "Dr. Smith"
+    },
+    {
+      "chartNumber": "P67890",
+      "name": "Jane Smith",
+      "dateOfBirth": "1990-12-10",
+      "gender": "Female",
+      "attendingPhysician": "Dr. Johnson"
+    },
+    {
+      "chartNumber": "P98765",
+      "name": "Bob Johnson",
+      "dateOfBirth": "1973-08-23",
+      "gender": "Male",
+      "attendingPhysician": "Dr. Brown"
+    },
+    {
+      "chartNumber": "P12345",
+      "name": "John Doe",
+      "dateOfBirth": "1985-05-15",
+      "gender": "Male",
+      "attendingPhysician": "Dr. Smith"
+    },
+    {
+      "chartNumber": "P67890",
+      "name": "Jane Smith",
+      "dateOfBirth": "1990-12-10",
+      "gender": "Female",
+      "attendingPhysician": "Dr. Johnson"
+    },
+    {
+      "chartNumber": "P98765",
+      "name": "Bob Johnson",
+      "dateOfBirth": "1973-08-23",
+      "gender": "Male",
+      "attendingPhysician": "Dr. Brown"
+    },
+    {
+      "chartNumber": "P12345",
+      "name": "John Doe",
+      "dateOfBirth": "1985-05-15",
+      "gender": "Male",
+      "attendingPhysician": "Dr. Smith"
+    },
+    {
+      "chartNumber": "P67890",
+      "name": "Jane Smith",
+      "dateOfBirth": "1990-12-10",
+      "gender": "Female",
+      "attendingPhysician": "Dr. Johnson"
+    },
+    {
+      "chartNumber": "P98765",
+      "name": "Bob Johnson",
+      "dateOfBirth": "1973-08-23",
+      "gender": "Male",
+      "attendingPhysician": "Dr. Brown"
+    },
+    {
+      "chartNumber": "P12345",
+      "name": "John Doe",
+      "dateOfBirth": "1985-05-15",
+      "gender": "Male",
+      "attendingPhysician": "Dr. Smith"
+    },
+    {
+      "chartNumber": "P67890",
+      "name": "Jane Smith",
+      "dateOfBirth": "1990-12-10",
+      "gender": "Female",
+      "attendingPhysician": "Dr. Johnson"
+    },
+    {
+      "chartNumber": "P98765",
+      "name": "Bob Johnson",
+      "dateOfBirth": "1973-08-23",
+      "gender": "Male",
+      "attendingPhysician": "Dr. Brown"
+    }
+  ]
+}
